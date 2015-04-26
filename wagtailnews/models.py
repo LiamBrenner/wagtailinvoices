@@ -64,16 +64,16 @@ class NewsIndexMixin(RoutablePageMixin):
 class AbstractNewsItem(models.Model):
 
     newsindex = models.ForeignKey(Page)
-    date = models.DateTimeField('Published date', default=timezone.now)
+    time = models.DateTimeField('Published date', default=timezone.now, help_text="Not viewable by public")
 
     panels = [
-        FieldPanel('date'),
+        FieldPanel('time'),
     ]
 
-    search_fields = (index.FilterField('date'),)
+    search_fields = (index.FilterField('time'),)
 
     class Meta:
-        ordering = ('-date',)
+        ordering = ('-time',)
         abstract = True
 
     def get_nice_url(self):

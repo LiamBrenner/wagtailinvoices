@@ -16,7 +16,7 @@ from ..models import get_newsindex_content_types
 def get_newsitem_edit_handler(NewsItem):
     panels = extract_panel_definitions_from_model_class(
         NewsItem, exclude=['newsindex'])
-    EditHandler = ObjectList(panels)
+    EditHandler = ObjectList(panels).bind_to_model(NewsItem)
     return EditHandler
 get_newsitem_edit_handler = memoize(get_newsitem_edit_handler, {}, 1)
 
@@ -37,7 +37,7 @@ def create(request, pk):
 
     newsitem = NewsItem()
     EditHandler = get_newsitem_edit_handler(NewsItem)
-    EditForm = get_newsitem_form(NewsItem, EditHandler)
+    EditForm = get_newsitem_form(NewsItem, EditHandler)  #LOOK
 
     if request.method == 'POST':
         form = EditForm(request.POST, request.FILES)
