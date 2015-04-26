@@ -4,7 +4,7 @@
 {% block bodyclass %}menu-news{% endblock %}
 {% block content %}
 
-    {% include "wagtailadmin/shared/header.html" with title="News" icon="news" %}
+    {% include "wagtailadmin/shared/header.html" with title="Invoices" icon="invoices" %}
 
     <div class="nice-padding">
         {% if has_news %}
@@ -24,7 +24,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <p>There are no news pages yet - go add one!</p>
+            <p>There are no payment pages yet - go add one!</p>
         {% endif %}
     </div>
 {% endblock %}

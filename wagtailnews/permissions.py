@@ -21,7 +21,7 @@ def user_can_edit_news(user):
     """ true if user has any permission related to any content type registered as a news type """
     news_content_types = get_newsindex_content_types()
     if user.is_active and user.is_superuser:
-        # admin can edit news iff any news types exist
+        # admin can edit news if any news types exist
         return bool(news_content_types)
 
     permissions = Permission.objects.filter(content_type__in=news_content_types).select_related('content_type')

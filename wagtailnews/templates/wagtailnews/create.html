@@ -1,10 +1,10 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
-{% block titletag %}{% blocktrans %}New news post{% endblocktrans %}{% endblock %}
+{% block titletag %}{% blocktrans %}New invoice{% endblocktrans %}{% endblock %}
 {% block bodyclass %}menu-news{% endblock %}
 {% block content %}
     {% trans "New" as new_str %}
-    {% trans "news post" as newspost_str %}
+    {% trans "invoice" as newspost_str %}
     {% include "wagtailadmin/shared/header.html" with title=new_str subtitle=newspost_str icon="news" %}
 
     <form action="{% url 'wagtailnews_create' pk=newsindex.pk %}" method="POST">

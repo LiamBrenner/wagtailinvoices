@@ -1,16 +1,16 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
-{% block titletag %}{% trans "News" %}{% endblock %}
+{% block titletag %}{% trans "Invoices" %}{% endblock %}
 {% block bodyclass %}menu-news{% endblock %}
 {% block content %}
 
     <header class="nice-padding">
         <div class="row row-flush">
             <div class="left col9">
-                <h1 class="icon icon-grip">{% blocktrans %}News{% endblocktrans %} <span>{{ newsindex.url }}</span></h1>
+                <h1 class="icon icon-edit">{% blocktrans %}Invoices{% endblocktrans %} <span>{{ newsindex.url }}</span></h1>
             </div>
             <div class="right col3">
-                <a href="{% url 'wagtailnews_create' newsindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Add news post{% endblocktrans %}</a>
+                <a href="{% url 'wagtailnews_create' newsindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Create Invoice{% endblocktrans %}</a>
             </div>
         </div>
     </header>
@@ -20,7 +20,9 @@
             <colgroup>
             <thead><tr class="table-headers">
                 <th class="title">Title</th>
-                <th class="date">Date</th>
+                <th class="date">Issue Date</th>
+                <th class='date'>Amount</th>
+                <th class="date">ID</th>
             </tr></thead>
             <tbody>
             {% for newsitem in newsitem_list %}
@@ -36,14 +38,20 @@
                             <li><a href="{% url 'wagtailnews_delete' pk=newsindex.pk newsitem_pk=newsitem.pk %}" class="button button-small button-secondary no">{% trans 'Delete' %}</a></li>
                         </ul>
                     </td>
+                    <td class='date'>
+                        {{ newsitem.time }}
+                    </td>
+                    <td class='date'>
+                        ${{ newsitem.amount }}
+                    </td>
                     <td class="date">
-                        {{ newsitem.date }}
+                        {{ newsitem.id }}
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <div class="nice-padding">No news posts yet!</div>
+        <div class="nice-padding">No invoices yet!</div>
     {% endif %}
 {% endblock %}

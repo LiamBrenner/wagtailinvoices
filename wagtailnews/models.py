@@ -64,7 +64,7 @@ class NewsIndexMixin(RoutablePageMixin):
 class AbstractNewsItem(models.Model):
 
     newsindex = models.ForeignKey(Page)
-    time = models.DateTimeField('Published date', default=timezone.now, help_text="Not viewable by public")
+    time = models.DateTimeField('Issue date', default=timezone.now)
 
     panels = [
         FieldPanel('time'),

@@ -14,7 +14,7 @@ from .permissions import user_can_edit_news
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^news/', include(urls)),
+        url(r'^invoices/', include(urls)),
     ]
 
 
@@ -22,6 +22,6 @@ def register_admin_urls():
 def construct_main_menu(request, menu_items):
     if user_can_edit_news(request.user):
         menu_items.append(
-            MenuItem(_('News'), urlresolvers.reverse('wagtailnews_choose'),
-                     classnames='icon icon-grip', order=250)
+            MenuItem(_('Invoices'), urlresolvers.reverse('wagtailnews_choose'),
+                     classnames='icon icon-plus', order=250)
         )
