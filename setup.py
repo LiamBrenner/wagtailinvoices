@@ -31,7 +31,7 @@ setup(
     packages=find_packages(),
 
     include_package_data=True,
-    package_data={ },
+    package_data={},
 
     classifiers=[
         'Environment :: Web Environment',
