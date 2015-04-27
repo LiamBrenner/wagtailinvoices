@@ -5,8 +5,11 @@ from six import text_type, string_types
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.text import slugify
+from uuidfield import UUIDField
+
 
 from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
@@ -30,25 +33,17 @@ def get_newsindex_content_types():
 
 class NewsIndexMixin(RoutablePageMixin):
 
-    class Meta:
+    class Meta: 
         pass
 
     newsitem_model = None
     subpage_types = []
 
     subpage_urls = (
-        url(r'^$', 'v_index', name='index'),
-        url(r'^(?P<year>\d{4})/$', 'v_year', name='year'),
-        url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', 'v_month', name='month'),
-        url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'v_day', name='day'),
-        url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<pk>\d+)-(?P<slug>.*)/$', 'v_post', name='post'),
+        url(r'^(?P<uuid>[0-9a-f-]+)/$', 'v_invoice', name='invoice'),
     )
 
-    v_index = lambda s, r: frontend.news_index(r, s)
-    v_year = lambda s, r, **k: frontend.news_year(r, s, **k)
-    v_month = lambda s, r, **k: frontend.news_month(r, s, **k)
-    v_day = lambda s, r, **k: frontend.news_day(r, s, **k)
-    v_post = lambda s, r, **k: frontend.newsitem_detail(r, s, **k)
+    v_invoice = lambda s, r, **k: frontend.newsitem_detail(r, s, **k)
 
     @classmethod
     def get_newsitem_model(cls):
@@ -65,6 +60,7 @@ class AbstractNewsItem(models.Model):
 
     newsindex = models.ForeignKey(Page)
     time = models.DateTimeField('Issue date', default=timezone.now)
+    uuid = UUIDField(auto=True, null=True, default=None)
 
     panels = [
         FieldPanel('time'),
@@ -87,11 +83,15 @@ class AbstractNewsItem(models.Model):
 
     def url(self):
         newsindex = self.newsindex.specific
-        ldate = timezone.localtime(self.date)
-        url = newsindex.url + newsindex.reverse_subpage('post', kwargs={
-            'year': ldate.year, 'month': ldate.month, 'day': ldate.day,
-            'pk': self.pk, 'slug': self.get_nice_url()})
+        url = newsindex.url + newsindex.reverse_subpage('invoice', kwargs={
+            'uuid': str(self.uuid)})
         return url
+
+    def serve(self, request):
+        return render(request, self.get_template(request), {
+            'self': self.newsindex.specific,
+            'invoice': self,
+        })
 
 
 # Need to import this down here to prevent circular imports :(
