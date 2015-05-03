@@ -1,21 +1,21 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
-{% block titletag %}{% trans "News" %}{% endblock %}
-{% block bodyclass %}menu-news{% endblock %}
+{% block titletag %}{% trans "Invoices" %}{% endblock %}
+{% block bodyclass %}menu-invoice{% endblock %}
 {% block content %}
 
     {% include "wagtailadmin/shared/header.html" with title="Invoices" icon="invoices" %}
 
     <div class="nice-padding">
-        {% if has_news %}
+        {% if has_invoice %}
 
             <ul class="listing">
-                {% for newsindex, model_type in newsindex_list %}
+                {% for invoiceindex, model_type in invoiceindex_list %}
                     <li>
                         <div class="row row-flush title">
                             <h2>
-                                <a href="{% url 'wagtailnews_index' pk=newsindex.pk %}" class="col6">
-                                    {{ newsindex.title }}
+                                <a href="{% url 'wagtailinvoices_index' pk=invoiceindex.pk %}" class="col6">
+                                    {{ invoiceindex.title }}
                                 </a>
                             </h2>
                             <small class="col6">{{ model_type|title }}</small>

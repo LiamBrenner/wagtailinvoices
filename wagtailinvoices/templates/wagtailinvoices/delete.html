@@ -1,16 +1,16 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
-{% block titletag %}{% trans "News" %}{% endblock %}
-{% block bodyclass %}menu-news{% endblock %}
+{% block titletag %}{% trans "Invoices" %}{% endblock %}
+{% block bodyclass %}menu-invoice{% endblock %}
 {% block content %}
 
     {% trans "Delete" as new_str %}
-    {% include "wagtailadmin/shared/header.html" with title=new_str subtitle=newsitem icon="grip" %}
+    {% include "wagtailadmin/shared/header.html" with title=new_str subtitle=invoice icon="grip" %}
 
     <div class="row row-flush nice-padding">
-        <form action="{% url 'wagtailnews_delete' pk=newsindex.pk newsitem_pk=newsitem.pk %}" method="POST">
+        <form action="{% url 'wagtailinvoices_delete' pk=invoiceindex.pk invoice_pk=invoice.pk %}" method="POST">
             {% csrf_token %}
-            <p>{% blocktrans %}Are you sure you want to delete this news item?{% endblocktrans %}</p>
+            <p>{% blocktrans %}Are you sure you want to delete this invoice item?{% endblocktrans %}</p>
             <input type="submit" class="button no" value="{% trans 'Yes, delete' %}" />
         </form>
     </div>

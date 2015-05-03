@@ -1,22 +1,22 @@
 ===========
-wagtailnews
+wagtailinvoices
 ===========
 
-A plugin for Wagtail that provides news / blogging functionality.
+A plugin for Wagtail that provides invoice functionality
 
 Installing
 ==========
 
 Install using pip::
 
-    pip install wagtailnews
+    pip install wagtailinvoices
 
-It works with Wagtail 0.7 and upwards.
+It works with Wagtail 0.9 and upwards.
 
 Using
 =====
 
-Create news models for your application that inherit from the relevant ``wagtailnews`` models:
+Create invoice models for your application that inherit from the relevant ``wagtailinvoices`` models:
 
 .. code:: python
 
@@ -26,28 +26,28 @@ Create news models for your application that inherit from the relevant ``wagtail
     from wagtail.wagtailcore.fields import RichTextField
     from wagtail.wagtailcore.models import Page
 
-    from wagtailnews.models import NewsIndexMixin, AbstractNewsItem
-    from wagtailnews.decorators import newsindex
+    from wagtailinvoices.models import InvoiceIndexMixin, AbstractInvoice
+    from wagtailinvoices.decorators import invoiceindex
 
 
-    # The decorator registers this model as a news index
-    @newsindex
-    class NewsIndex(NewsIndexMixin, Page):
+    # The decorator registers this model as a invoice index
+    @invoiceindex
+    class InvoiceIndex(InvoiceIndexMixin, Page):
         # Add extra fields here, as in a normal Wagtail Page class, if required
-        newsitem_model = 'NewsItem'
+        invoice_model = 'Invoice'
 
 
-    class NewsItem(AbstractNewsItem):
-        # NewsItem is a normal Django model, *not* a Wagtail Page.
+    class Invoice(AbstractInvoice):
+        # Invoice is a normal Django model, *not* a Wagtail Page.
         # Add any fields required for your page.
-        # It already has ``date`` field, and a link to its parent ``NewsIndex`` Page
+        # It already has ``date`` field, and a link to its parent ``InvoiceIndex`` Page
         title = models.CharField(max_length=255)
         body = RichTextField()
 
         panels = [
             FieldPanel('title', classname='full title'),
             FieldPanel('body', classname='full'),
-        ] + AbstractNewsItem.panels
+        ] + AbstractInvoice.panels
 
         def __unicode__(self):
             return self.title

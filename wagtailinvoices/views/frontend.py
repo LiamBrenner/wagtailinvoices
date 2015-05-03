@@ -7,13 +7,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 
-from ..conf import paginate
-
-def newsitem_detail(request, newsindex, uuid):
-    InvoiceItem = newsindex.get_newsitem_model()
+def invoice_detail(request, invoiceindex, uuid):
+    InvoiceItem = invoiceindex.get_invoice_model()
     try:
         uuid = UUID(uuid)
     except ValueError:
         raise Http404
-    invoiceitem = get_object_or_404(InvoiceItem, newsindex=newsindex, uuid=uuid)
-    return invoiceitem.serve(request)
+    invoice = get_object_or_404(InvoiceItem, invoiceindex=invoiceindex, uuid=uuid)
+    return invoice.serve(request)

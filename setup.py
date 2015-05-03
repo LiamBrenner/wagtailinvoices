@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-Install wagtailnews using setuptools
+Install wagtailinvoices using setuptools
 """
 
-from wagtailnews import __version__
+from wagtailinvoices import __version__
 
 with open('README.rst', 'r') as f:
     readme = f.read()
@@ -16,13 +16,13 @@ except ImportError:
     from setuptools import setup, find_packages
 
 setup(
-    name='wagtailnews',
+    name='wagtailinvoices',
     version=__version__,
-    description='News / blog plugin for the Wagtail CMS',
+    description='Invoice mod for the Wagtail CMS',
     long_description=readme,
-    author='Tim Heap',
-    author_email='tim@takeflight.com.au',
-    url='https://bitbucket.org/takeflight/wagtailnews',
+    author='Liam Brenner',
+    author_email='liam.brenner@gmail.com',
+    url='https://bitbucket.org/sablewalnut/wagtailinvoices',
 
     install_requires=['wagtail>=0.9'],
     zip_safe=False,

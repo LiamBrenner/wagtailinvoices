@@ -1,13 +1,13 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
-{% block titletag %}{% trans "News" %}{% endblock %}
-{% block bodyclass %}menu-news{% endblock %}
+{% block titletag %}{% blocktrans %}New invoice{% endblocktrans %}{% endblock %}
+{% block bodyclass %}menu-invoice{% endblock %}
 {% block content %}
+    {% trans "New" as new_str %}
+    {% trans "invoice" as invoicepost_str %}
+    {% include "wagtailadmin/shared/header.html" with title=new_str subtitle=invoicepost_str icon="invoice" %}
 
-    {% trans "Edit" as new_str %}
-    {% include "wagtailadmin/shared/header.html" with title=new_str subtitle=newsitem icon="news" %}
-
-    <form action="{% url 'wagtailnews_edit' pk=newsindex.pk newsitem_pk=newsitem.pk %}" method="POST">
+    <form action="{% url 'wagtailinvoices_create' pk=invoiceindex.pk %}" method="POST">
         {% csrf_token %}
         {{ edit_handler.render_form_content }}
 
@@ -15,9 +15,8 @@
             <ul>
                 <li class="actions">
                     <div class="dropdown dropup match-width">
-                        <div><input type="submit" value="{% trans 'Update' %}" /></div>
+                        <div><input type="submit" value="{% trans 'Create' %}" /></div>
                     </div>
-                    <div><input type="submit" value="{% trans 'Update and send' %}" name='{{send_button_name}}' /></div>
                 </li>
             </ul>
         </footer>

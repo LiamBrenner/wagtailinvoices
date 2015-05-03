@@ -1,9 +1,9 @@
 from django.contrib.auth.models import Permission
 
-from .models import get_newsindex_content_types
+from .models import get_invoiceindex_content_types
 
 
-def user_can_edit_news_type(user, content_type):
+def user_can_edit_invoice_type(user, content_type):
     """ true if user has any permission related to this content type """
     if user.is_active and user.is_superuser:
         return True
@@ -17,14 +17,14 @@ def user_can_edit_news_type(user, content_type):
     return False
 
 
-def user_can_edit_news(user):
-    """ true if user has any permission related to any content type registered as a news type """
-    news_content_types = get_newsindex_content_types()
+def user_can_edit_invoices(user):
+    """ true if user has any permission related to any content type registered as a invoice type """
+    invoice_content_types = get_invoiceindex_content_types()
     if user.is_active and user.is_superuser:
-        # admin can edit news if any news types exist
-        return bool(news_content_types)
+        # admin can edit invoice if any invoice types exist
+        return bool(invoice_content_types)
 
-    permissions = Permission.objects.filter(content_type__in=news_content_types).select_related('content_type')
+    permissions = Permission.objects.filter(content_type__in=invoice_content_types).select_related('content_type')
     for perm in permissions:
         permission_name = "%s.%s" % (perm.content_type.app_label, perm.codename)
         if user.has_perm(permission_name):

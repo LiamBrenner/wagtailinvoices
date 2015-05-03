@@ -18,47 +18,47 @@ from wagtail.wagtailcore.utils import resolve_model_string
 from wagtail.wagtailsearch import index
 
 
-NEWSINDEX_MODEL_CLASSES = []
-_NEWSINDEX_CONTENT_TYPES = []
+INVOICEINDEX_MODEL_CLASSES = []
+_INVOICEINDEX_CONTENT_TYPES = []
 
 
-def get_newsindex_content_types():
-    global _NEWSINDEX_CONTENT_TYPES
-    if len(_NEWSINDEX_CONTENT_TYPES) != len(NEWSINDEX_MODEL_CLASSES):
-        _NEWSINDEX_CONTENT_TYPES = [
+def get_invoiceindex_content_types():
+    global _INVOICEINDEX_CONTENT_TYPES
+    if len(_INVOICEINDEX_CONTENT_TYPES) != len(INVOICEINDEX_MODEL_CLASSES):
+        _INVOICEINDEX_CONTENT_TYPES = [
             ContentType.objects.get_for_model(cls)
-            for cls in NEWSINDEX_MODEL_CLASSES]
-    return _NEWSINDEX_CONTENT_TYPES
+            for cls in INVOICEINDEX_MODEL_CLASSES]
+    return _INVOICEINDEX_CONTENT_TYPES
 
 
-class NewsIndexMixin(RoutablePageMixin):
+class InvoiceIndexMixin(RoutablePageMixin):
 
     class Meta: 
         pass
 
-    newsitem_model = None
+    invoice_model = None
     subpage_types = []
 
     subpage_urls = (
         url(r'^(?P<uuid>[0-9a-f-]+)/$', 'v_invoice', name='invoice'),
     )
 
-    v_invoice = lambda s, r, **k: frontend.newsitem_detail(r, s, **k)
+    v_invoice = lambda s, r, **k: frontend.invoice_detail(r, s, **k)
 
     @classmethod
-    def get_newsitem_model(cls):
-        if isinstance(cls.newsitem_model, models.Model):
-            return cls.newsitem_model
-        elif isinstance(cls.newsitem_model, string_types):
-            return resolve_model_string(cls.newsitem_model, cls._meta.app_label)
+    def get_invoice_model(cls):
+        if isinstance(cls.invoice_model, models.Model):
+            return cls.invoice_model
+        elif isinstance(cls.invoice_model, string_types):
+            return resolve_model_string(cls.invoice_model, cls._meta.app_label)
         else:
-            raise ValueError('Can not resolve {0}.newsitem_model in to a model: {1!r}'.format(
-                cls.__name__, cls.newsitem_model))
+            raise ValueError('Can not resolve {0}.invoice_model in to a model: {1!r}'.format(
+                cls.__name__, cls.invoice_model))
 
 
-class AbstractNewsItem(models.Model):
+class AbstractInvoice(models.Model):
 
-    newsindex = models.ForeignKey(Page)
+    invoiceindex = models.ForeignKey(Page)
     time = models.DateTimeField('Issue date', default=timezone.now)
     uuid = UUIDField(auto=True, null=True, default=None)
 
@@ -82,14 +82,14 @@ class AbstractNewsItem(models.Model):
             return '{0}/{1}.html'.format(self._meta.app_label, self._meta.model_name)
 
     def url(self):
-        newsindex = self.newsindex.specific
-        url = newsindex.url + newsindex.reverse_subpage('invoice', kwargs={
+        invoiceindex = self.invoiceindex.specific
+        url = invoiceindex.url + invoiceindex.reverse_subpage('invoice', kwargs={
             'uuid': str(self.uuid)})
         return url
 
     def serve(self, request):
         return render(request, self.get_template(request), {
-            'self': self.newsindex.specific,
+            'self': self.invoiceindex.specific,
             'invoice': self,
         })
 
