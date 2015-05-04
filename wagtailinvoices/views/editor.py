@@ -81,7 +81,7 @@ def send_invoice(request, invoice):
     # Set Variables
     email = invoice.client_email
     name = invoice.client_full_name
-    booking_details = invoice.client_booking_form
+    booking_details = invoice.service_items.all()
     def get_total(service_items):
         amount = 0
         for i in service_items:
