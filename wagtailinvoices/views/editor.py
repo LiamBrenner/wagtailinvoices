@@ -23,14 +23,6 @@ def get_invoice_edit_handler(Invoice):
 get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 
-def get_invoice_form(Invoice, EditHandler):
-    return get_form_for_model(
-        Invoice,
-        formsets=EditHandler.required_formsets(),
-        widgets=EditHandler.widget_overrides(),
-        exclude=['invoiceindex'])
-get_invoice_form = memoize(get_invoice_form, {}, 2)
-
 
 # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
 def link_callback(uri, rel):
@@ -126,17 +118,15 @@ def create(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
     Invoice = invoiceindex.get_invoice_model()
 
-    invoice = Invoice()
+    invoice = Invoice(invoiceindex=invoiceindex)
     EditHandler = get_invoice_edit_handler(Invoice)
-    EditForm = get_invoice_form(Invoice, EditHandler)  #LOOK
+    EditForm = EditHandler.get_form_class(Invoice)
 
     if request.method == 'POST':
-        form = EditForm(request.POST, request.FILES)
+        form = EditForm(request.POST, request.FILES, instance=invoice)
 
         if form.is_valid():
-            invoice = form.save(commit=False)
-            invoice.invoiceindex = invoiceindex
-            invoice.save()
+            invoice = form.save()
             send_invoice(request, invoice)
 
             messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
@@ -161,15 +151,15 @@ def edit(request, pk, invoice_pk):
     Invoice = invoiceindex.get_invoice_model()
     invoice = get_object_or_404(Invoice, invoiceindex=invoiceindex, pk=invoice_pk)
     send_button_name = 'send_invoice'
+
     EditHandler = get_invoice_edit_handler(Invoice)
-    EditForm = get_invoice_form(Invoice, EditHandler)
+    EditForm = EditHandler.get_form_class(Invoice)
 
     if request.method == 'POST':
         form = EditForm(request.POST, request.FILES, instance=invoice)
 
         if form.is_valid():
-            invoice = form.save(commit=False)
-            invoice.save()
+            invoice = form.save()
 
             if send_button_name in request.POST:
                 send_invoice(request, invoice)
