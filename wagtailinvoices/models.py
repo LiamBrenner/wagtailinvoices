@@ -43,9 +43,11 @@ class InvoiceIndexMixin(RoutablePageMixin):
 
     subpage_urls = (
         url(r'^(?P<uuid>[0-9a-f-]+)/$', 'v_invoice', name='invoice'),
+        url(r'^(?P<uuid>[0-9a-f-]+)/pdf/$', 'v_invoice_pdf', name='invoice_pdf')
     )
 
     v_invoice = lambda s, r, **k: frontend.invoice_detail(r, s, **k)
+    v_invoice_pdf = lambda s, r, **k: frontend.invoice_pdf(r, s, **k)
 
     @classmethod
     def get_invoice_model(cls):
