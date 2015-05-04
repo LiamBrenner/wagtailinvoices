@@ -31,29 +31,92 @@ def get_invoice_form(Invoice, EditHandler):
         exclude=['invoiceindex'])
 get_invoice_form = memoize(get_invoice_form, {}, 2)
 
+
+# Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
+def link_callback(uri, rel):
+    # use short variable names
+    sUrl = settings.STATIC_URL      # Typically /static/
+    sRoot = settings.STATIC_ROOT    # Typically /home/userX/project_static/
+    mUrl = settings.MEDIA_URL       # Typically /static/media/
+    mRoot = settings.MEDIA_ROOT     # Typically /home/userX/project_static/media/
+
+    # convert URIs to absolute system paths
+    if uri.startswith(mUrl):
+        path = os.path.join(mRoot, uri.replace(mUrl, ""))
+    elif uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+            raise Exception(
+                    'media URI must start with %s or %s' % \
+                    (sUrl, mUrl))
+    return path
+
+def generate_pdf(request, type):
+    # Set variables
+    id = invoice.id
+    # Prepare context
+    data = {}
+    data['today'] = datetime.date.today()
+    data['farmer'] = 'Old MacDonald'
+    data['animals'] = [('Cow', 'Moo'), ('Goat', 'Baa'), ('Pig', 'Oink')]
+
+    # Render html content through html template with context
+    template = get_template('invoices/invoice_pdf.html')
+    html  = template.render(Context(data))
+
+    # Write PDF to file
+    file = open(os.join(settings.MEDIA_ROOT, 'Invoice #' + id + '.pdf'), "w+b")
+    pisaStatus = pisa.CreatePDF(html, dest=file,
+            link_callback = link_callback)
+
+    # Return PDF document through a Django HTTP response
+    file.seek(0)
+    pdf = file.read()
+    file.close()            # Don't forget to close the file handle
+    return HttpResponse(pdf, mimetype='application/pdf')
+
 def send_invoice(request, invoice):
     # Set Variables
     email = invoice.client_email
     name = invoice.client_full_name
     booking_details = invoice.client_booking_form
-    amount = invoice.amount
+    def get_total(service_items):
+        amount = 0
+        for i in service_items:
+            amount = amount + i.amount
+        return amount
+    total = get_total(invoice.service_items.all()) 
+    gst = total / 11
     link = request.build_absolute_uri(invoice.url())
     id = invoice.id
-    adminmessage = 'Hi John, <br> An invoice has been generated with the following ID:<b> ' + str(id) + '</b> <br> The details of the clients booking and invoice are as follows; <br>' + '...'
+    ph_number = invoice.client_phone_number
+    adminmessage = render_to_string('emails/admin_invoice_message.txt', {
+        'name': name,
+        'ph_number': ph_number,
+        'email': email,
+        'booking_details': booking_details,
+        'total': total,
+        'gst': gst,
+        'link': link,
+        'invoice': invoice,
+    })
     # Email to business owner
     admin_email = EmailMessage('Invoice #' + str(id), adminmessage, "admin@tasmanianexclusivetours.com.au",
         ['admin@tasmanianexclusivetours.com.au'])
     admin_email.content_subtype = "html"
     admin_email.send()
     # Customer Email
-    transactionmessage = render_to_string('emails/transaction_message.txt', {
+    invoicemessage = render_to_string('emails/invoice_message.txt', {
         'name': name,
         'booking_details': booking_details,
-        'amount': amount,
+        'total': total,
+        'gst': gst,
         'link': link,
         'invoice': invoice,
     })
-    customer_email = EmailMessage('Invoice #' + str(id), transactionmessage, "admin@tasmanianexclusivetours.com.au",
+    customer_email = EmailMessage('Invoice #' + str(id), invoicemessage, "admin@tasmanianexclusivetours.com.au",
                  [email])
     customer_email.content_subtype = "html"
     customer_email.send()

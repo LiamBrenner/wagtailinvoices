@@ -12,14 +12,14 @@
             <div class="right col3">
                 <a href="{% url 'wagtailinvoices_create' invoiceindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Create Invoice{% endblocktrans %}</a>
             </div>
-            <form class='col search-form' action='{% url 'wagtailinvoices_search' pk=invoiceindex.pk %}' method="GET">
+<form class='col search-form' action='{% url 'wagtailinvoices_search' pk=invoiceindex.pk %}' method="GET">
     {% csrf_token %}
     {{form}}
     <input type='submit' value="Search">
 </form>
         </div>
     </header>
-    {% if invoice_list.exists %}
+    {% if invoice_list %}
         <table class="listing full-width">
             <colgroup>
             <thead><tr class="table-headers">

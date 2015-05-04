@@ -8,6 +8,7 @@ from django.db import models
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.text import slugify
+from django.db.models.query import QuerySet
 from uuidfield import UUIDField
 
 
@@ -16,6 +17,7 @@ from wagtail.wagtailadmin.edit_handlers import FieldPanel
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.utils import resolve_model_string
 from wagtail.wagtailsearch import index
+from wagtail.wagtailsearch.backends import get_search_backend
 
 
 INVOICEINDEX_MODEL_CLASSES = []
@@ -55,6 +57,13 @@ class InvoiceIndexMixin(RoutablePageMixin):
             raise ValueError('Can not resolve {0}.invoice_model in to a model: {1!r}'.format(
                 cls.__name__, cls.invoice_model))
 
+class AbstractInvoiceQuerySet(QuerySet):
+    def search(self, query_string, fields=None, backend='default'):
+        """
+        This runs a search query on all the pages in the QuerySet
+        """
+        search_backend = get_search_backend(backend)
+        return search_backend.search(query_string, self)
 
 class AbstractInvoice(models.Model):
 
@@ -67,6 +76,8 @@ class AbstractInvoice(models.Model):
     ]
 
     search_fields = (index.FilterField('time'),)
+
+    objects = AbstractInvoiceQuerySet.as_manager()
 
     class Meta:
         ordering = ('-time',)

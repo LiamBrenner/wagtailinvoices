@@ -11,13 +11,18 @@
         {% csrf_token %}
         {{ edit_handler.render_form_content }}
 
-        <footer>
+<footer>
             <ul>
                 <li class="actions">
-                    <div class="dropdown dropup match-width">
-                        <div><input type="submit" value="{% trans 'Update' %}" /></div>
+                    <div class="dropdown dropup dropdown-button match-width">
+                            <input type="submit" value="{% trans 'Update' %}" />
+                        <div class="dropdown-toggle icon icon-arrow-up"></div>
+
+                        <ul role="menu">
+                        <li>
+                            <input type="submit" value="{% trans 'Update and send' %}" name='{{send_button_name}}' />
+                        </li>
                     </div>
-                    <div><input type="submit" value="{% trans 'Update and send' %}" name='{{send_button_name}}' /></div>
                 </li>
             </ul>
         </footer>
