@@ -42,7 +42,6 @@ def send_invoice(request, invoice):
         'name': name,
         'ph_number': ph_number,
         'email': email,
-        'booking_details': booking_details,
         'total': total,
         'gst': gst,
         'link': link,
@@ -58,7 +57,6 @@ def send_invoice(request, invoice):
     # Customer Email
     invoicemessage = render_to_string('emails/invoice_message.txt', {
         'name': name,
-        'booking_details': booking_details,
         'total': total,
         'gst': gst,
         'link': link,
