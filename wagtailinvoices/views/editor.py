@@ -26,7 +26,8 @@ def send_invoice(request, invoice):
     # Set Variables
     email = invoice.client_email
     name = invoice.client_full_name
-    booking_details = invoice.service_items.all()
+    admin_to = invoice.admin_confirm_to_address
+    service_items = invoice.service_items.all()
     def get_total(service_items):
         amount = 0
         for i in service_items:
@@ -35,7 +36,7 @@ def send_invoice(request, invoice):
     total = get_total(invoice.service_items.all()) 
     gst = total / 11
     link = request.build_absolute_uri(invoice.url())
-    id = invoice.id
+    id = str(invoice.id)
     ph_number = invoice.client_phone_number
     adminmessage = render_to_string('emails/admin_invoice_message.txt', {
         'name': name,
@@ -46,10 +47,12 @@ def send_invoice(request, invoice):
         'gst': gst,
         'link': link,
         'invoice': invoice,
+        'id': id,
+        'service_items': service_items,
     })
     # Email to business owner
-    admin_email = EmailMessage('Invoice #' + str(id), adminmessage, "admin@tasmanianexclusivetours.com.au",
-        ['admin@tasmanianexclusivetours.com.au'])
+    admin_email = EmailMessage('Invoice #' + id, adminmessage, admin_to,
+        [admin_to])
     admin_email.content_subtype = "html"
     admin_email.send()
     # Customer Email
@@ -60,8 +63,10 @@ def send_invoice(request, invoice):
         'gst': gst,
         'link': link,
         'invoice': invoice,
+        'id': id,
+        'service_items': service_items,
     })
-    customer_email = EmailMessage('Invoice #' + str(id), invoicemessage, "admin@tasmanianexclusivetours.com.au",
+    customer_email = EmailMessage('Invoice #' + id, invoicemessage, "admin@tasmanianexclusivetours.com.au",
                  [email])
     customer_email.content_subtype = "html"
     customer_email.send()
