@@ -44,10 +44,10 @@
                         </ul>
                     </td>
                     <td class='date'>
-                        {{ invoice.last_updated }}
+                        {{ invoice.last_updated|date:'l d F, Y' }}
                     </td>
                     <td class='date'>
-                        {{ invoice.time }}
+                        {{ invoice.time|date:'l d F, Y' }}
                     </td>
                     <td class='date'>
                         ${{ invoice.total }}

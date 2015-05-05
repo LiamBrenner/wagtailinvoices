@@ -1,9 +1,16 @@
+import os
+import StringIO
+from xhtml2pdf import pisa
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.template.loader import get_template
+from django.template import Context
+from django.http import HttpResponse
+
 
 # TODO Swap with django.utils.lru_cache.lru_cache at Django 1.7
 from django.utils.functional import memoize
@@ -69,6 +76,71 @@ def send_invoice(request, invoice):
     customer_email.content_subtype = "html"
     customer_email.send()
 
+def serve_pdf(invoice, request):
+    # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
+    def link_callback(uri, rel):
+        # use short variable names
+        sUrl = settings.STATIC_URL      # Typically /static/
+        sRoot = settings.STATIC_ROOT    # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL       # Typically /static/media/
+        mRoot = settings.MEDIA_ROOT     # Typically /home/userX/project_static/media/
+
+        # convert URIs to absolute system paths
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+
+        # make sure that file exists
+        if not os.path.isfile(path):
+                raise Exception(
+                        'media URI must start with %s or %s' % \
+                        (sUrl, mUrl))
+        return path
+
+    # Set variables
+    id = invoice.id
+    total = invoice.total()
+    gst = total / 11
+    email = invoice.client_email
+    name = invoice.client_full_name
+    date = invoice.time
+    address = invoice.client_address
+    terms = invoice.days_due
+    due = invoice.due()
+    ph_number = invoice.client_phone_number
+    # Prepare context
+    data = {
+        'service_items': invoice.service_items.all(),
+        'total': total,
+        'id': id,
+        'gst': gst,
+        'name': name,
+        'email': email,
+        'date': date,
+        'address': address,
+        'terms': terms,
+        'due': due,
+        'ph_number': ph_number,
+    }
+
+
+    # Render html content through html template with context
+    template = get_template('invoicelist/invoice_pdf.html')
+    html  = template.render(Context(data))
+
+    # Write PDF to file
+    #file = open(os.path.join(settings.MEDIA_ROOT, 'Invoice #' + str(id) + '.pdf'), "w+b")
+    file = StringIO.StringIO()
+    pisaStatus = pisa.CreatePDF(html, dest=file,
+            link_callback = link_callback)
+
+    # Return PDF document through a Django HTTP response
+    file.seek(0)
+    #pdf = file.read()
+    #file.close()            # Don't forget to close the file handle
+    return HttpResponse(file, content_type='application/pdf')
+
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
 def create(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
@@ -107,6 +179,7 @@ def edit(request, pk, invoice_pk):
     Invoice = invoiceindex.get_invoice_model()
     invoice = get_object_or_404(Invoice, invoiceindex=invoiceindex, pk=invoice_pk)
     send_button_name = 'send_invoice'
+    print_button_name = 'serve_pdf'
 
     EditHandler = get_invoice_edit_handler(Invoice)
     EditForm = EditHandler.get_form_class(Invoice)
@@ -117,8 +190,11 @@ def edit(request, pk, invoice_pk):
         if form.is_valid():
             invoice = form.save()
 
-            if send_button_name in request.POST:
+            if send_button_name in request.POST and invoice.job_status == 'Completed':
                 send_invoice(request, invoice)
+
+            elif print_button_name in request.POST:
+                serve_pdf(invoice, request) 
 
             messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
             return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
@@ -133,6 +209,7 @@ def edit(request, pk, invoice_pk):
         'invoiceindex': invoiceindex,
         'invoice': invoice,
         'send_button_name': send_button_name,
+        'print_button_name': print_button_name,
         'form': form,
         'edit_handler': edit_handler,
     })

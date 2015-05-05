@@ -1,5 +1,6 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
+{% load wagtailroutablepage_tags %}
 {% block titletag %}{% trans "Invoices" %}{% endblock %}
 {% block bodyclass %}menu-invoice{% endblock %}
 {% block content %}
@@ -19,6 +20,9 @@
                         <div class="dropdown-toggle icon icon-arrow-up"></div>
 
                         <ul role="menu">
+                        <li>
+                        <a href='{% routablepageurl invoice.invoiceindex.specific 'invoice_pdf' uuid=invoice.uuid %}' target='_blank' name='{{print_button_name}}'> Open Invoice PDF </a>
+                        </li>
                         <li>
                             <input type="submit" value="{% trans 'Update and send' %}" name='{{send_button_name}}' />
                         </li>
