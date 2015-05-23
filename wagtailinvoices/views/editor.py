@@ -29,6 +29,48 @@ def get_invoice_edit_handler(Invoice):
     return EditHandler
 get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
+
+def notify_drivers(request, invoice):
+    service_items = invoice.service_items.all()
+    name = invoice.client_full_name
+    number = invoice.client_phone_number
+    organization = invoice.client_organization
+
+    for item in service_items:
+        if item.driver == "Not Applicable":
+            pass
+        else:
+            if item.driver == "John Casimaty":
+                driver_email = 'admin@chauffuered-cars.com.au'
+
+            elif item.driver == "Colin Parramore":
+                driver_email = 'colinparramore@gmail.com'
+
+            elif item.driver == "Allan Cerny":
+                driver_email = 'ab.cerny@bigpond.com'
+
+            elif item.driver == "Barry Griffin":
+                driver_email = 'barrytg@netspace.net.au'
+
+            driver_name = item.driver.split(" ")
+            notification = render_to_string('emails/notify_driver.txt', {
+                'driver_name': driver_name[0],
+                'details': invoice.service_items.all(),
+                'email': driver_email,
+                'description': item.description,
+                'third_party_ref': item.third_party_ref,
+                'ref:': item.ref,
+                'date': item.date,
+                'name': name,
+                'number': number,
+                'organization': organization,
+                'flight_number': item.flight_number,
+            })
+            driver_notification = EmailMessage('Job Notification', notification, 'admin@chauffuered-cars.com.au',
+                [driver_email])
+            driver_notification.content_subtype = "html"
+            driver_notification.send()
+
 def send_invoice(request, invoice):
     # Set Variables
     email = invoice.client_email
@@ -152,10 +194,14 @@ def create(request, pk):
 
     if request.method == 'POST':
         form = EditForm(request.POST, request.FILES, instance=invoice)
+        invoice.service_items.all()
 
         if form.is_valid():
             invoice = form.save()
             send_invoice(request, invoice)
+            notify_drivers(request, invoice)
+            invoice.notify_drivers = False
+            invoice.save()
 
             messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
             return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
@@ -189,12 +235,16 @@ def edit(request, pk, invoice_pk):
 
         if form.is_valid():
             invoice = form.save()
+            notify_drivers(request, invoice)
+            invoice.notify_drivers = False
+            invoice.save()
 
             if send_button_name in request.POST and invoice.job_status == 'Completed':
                 send_invoice(request, invoice)
 
             elif print_button_name in request.POST:
                 serve_pdf(invoice, request) 
+        
 
             messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
             return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
