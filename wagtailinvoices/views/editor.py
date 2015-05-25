@@ -41,7 +41,7 @@ def notify_drivers(request, invoice):
             pass
         else:
             if item.driver == "John Casimaty":
-                driver_email = 'admin@chauffuered-cars.com.au'
+                driver_email = 'john.casimaty@gmail.com'
 
             elif item.driver == "Colin Parramore":
                 driver_email = 'colinparramore@gmail.com'
