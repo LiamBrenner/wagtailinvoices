@@ -35,7 +35,6 @@ def notify_drivers(request, invoice):
     name = invoice.client_full_name
     number = invoice.client_phone_number
     organization = invoice.client_organization
-    car_number = invoice.car_number
 
     for item in service_items:
         if item.driver == "Not Applicable":
@@ -55,7 +54,7 @@ def notify_drivers(request, invoice):
 
             driver_name = item.driver.split(" ")
             notification = render_to_string('emails/notify_driver.txt', {
-                'car_number': car_number,
+                'car_number': item.car_number,
                 'driver_name': driver_name[0],
                 'details': invoice.service_items.all(),
                 'email': driver_email,
