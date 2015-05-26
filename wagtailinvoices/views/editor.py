@@ -111,7 +111,7 @@ def send_invoice(request, invoice):
     admin_email.send()
     # Customer Email
     invoicemessage = render_to_string('emails/invoice_message.txt', {
-        'name': name,
+        'name': name[0],
         'total': total,
         'gst': gst,
         'link': link,
