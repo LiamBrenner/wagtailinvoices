@@ -78,7 +78,7 @@ def notify_drivers(request, invoice):
 
 def send_invoice(request, invoice):
     # Set Variables
-    name = invoice.client_full_name.split(" ")
+    name = invoice.client_full_name
     email = invoice.client_email
     admin_to = invoice.admin_confirm_to_address
     service_items = invoice.service_items.all()
@@ -94,7 +94,7 @@ def send_invoice(request, invoice):
     id = str(invoice.id)
     ph_number = invoice.client_phone_number
     adminmessage = render_to_string('emails/admin_invoice_message.txt', {
-        'name': name[0],
+        'name': name,
         'ph_number': ph_number,
         'email': email,
         'total': total,
@@ -110,6 +110,7 @@ def send_invoice(request, invoice):
     admin_email.content_subtype = "html"
     admin_email.send()
     # Customer Email
+    name = name.split(" ")
     invoicemessage = render_to_string('emails/invoice_message.txt', {
         'name': name[0],
         'total': total,
