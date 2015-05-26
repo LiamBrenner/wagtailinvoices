@@ -92,7 +92,7 @@ def send_invoice(request, invoice):
     id = str(invoice.id)
     ph_number = invoice.client_phone_number
     adminmessage = render_to_string('emails/admin_invoice_message.txt', {
-        'name': name,
+        'name': name[0],
         'ph_number': ph_number,
         'email': email,
         'total': total,
