@@ -75,18 +75,20 @@ def notify_drivers(request, invoice):
     else:
         pass
 
+
 def send_invoice(request, invoice):
     # Set Variables
     name = invoice.client_full_name.split(" ")
     email = invoice.client_email
     admin_to = invoice.admin_confirm_to_address
     service_items = invoice.service_items.all()
+
     def get_total(service_items):
         amount = 0
         for i in service_items:
             amount = amount + i.amount
         return amount
-    total = get_total(invoice.service_items.all()) 
+    total = get_total(invoice.service_items.all())
     gst = total / 11
     link = request.build_absolute_uri(invoice.url())
     id = str(invoice.id)
@@ -122,8 +124,10 @@ def send_invoice(request, invoice):
     customer_email.content_subtype = "html"
     customer_email.send()
 
+
 def serve_pdf(invoice, request):
     # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
+
     def link_callback(uri, rel):
         # use short variable names
         sUrl = settings.STATIC_URL      # Typically /static/
@@ -170,21 +174,20 @@ def serve_pdf(invoice, request):
         'ph_number': ph_number,
     }
 
-
     # Render html content through html template with context
     template = get_template('invoicelist/invoice_pdf.html')
-    html  = template.render(Context(data))
+    html = template.render(Context(data))
 
     # Write PDF to file
-    #file = open(os.path.join(settings.MEDIA_ROOT, 'Invoice #' + str(id) + '.pdf'), "w+b")
+    # file = open(os.path.join(settings.MEDIA_ROOT, 'Invoice #' + str(id) + '.pdf'), "w+b")
     file = StringIO.StringIO()
     pisaStatus = pisa.CreatePDF(html, dest=file,
             link_callback = link_callback)
 
     # Return PDF document through a Django HTTP response
     file.seek(0)
-    #pdf = file.read()
-    #file.close()            # Don't forget to close the file handle
+    # pdf = file.read()
+    # file.close()            # Don't forget to close the file handle
     return HttpResponse(file, content_type='application/pdf')
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
@@ -243,12 +246,11 @@ def edit(request, pk, invoice_pk):
             invoice.notify_drivers = False
             invoice.save()
 
-            if send_button_name in request.POST and invoice.job_status == 'Completed':
+            if send_button_name in request.POST:
                 send_invoice(request, invoice)
 
             elif print_button_name in request.POST:
-                serve_pdf(invoice, request) 
-        
+                serve_pdf(invoice, request)
 
             messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
             return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
