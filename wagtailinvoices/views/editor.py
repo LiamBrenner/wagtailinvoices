@@ -74,8 +74,8 @@ def notify_drivers(request, invoice):
 
 def send_invoice(request, invoice):
     # Set Variables
-    email = invoice.client_email
-    name = invoice.client_full_name
+    name = item.client_full_name.split(" ")
+    mail = invoice.client_email
     admin_to = invoice.admin_confirm_to_address
     service_items = invoice.service_items.all()
     def get_total(service_items):
