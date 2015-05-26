@@ -31,51 +31,54 @@ get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 
 def notify_drivers(request, invoice):
-    service_items = invoice.service_items.all()
-    name = invoice.client_full_name
-    number = invoice.client_phone_number
-    organization = invoice.client_organization
+    if invoice.notify_drivers is True:
+        service_items = invoice.service_items.all()
+        name = invoice.client_full_name
+        number = invoice.client_phone_number
+        organization = invoice.client_organization
 
-    for item in service_items:
-        if item.driver == "Not Applicable":
-            pass
-        else:
-            if item.driver == "John Casimaty":
-                driver_email = 'john.casimaty@gmail.com'
+        for item in service_items:
+            if item.driver == "Not Applicable":
+                pass
+            else:
+                if item.driver == "John Casimaty":
+                    driver_email = 'john.casimaty@gmail.com'
 
-            elif item.driver == "Colin Parramore":
-                driver_email = 'colinparramore@gmail.com'
+                elif item.driver == "Colin Parramore":
+                    driver_email = 'colinparramore@gmail.com'
 
-            elif item.driver == "Allan Cerny":
-                driver_email = 'ab.cerny@bigpond.com'
+                elif item.driver == "Allan Cerny":
+                    driver_email = 'ab.cerny@bigpond.com'
 
-            elif item.driver == "Barry Griffin":
-                driver_email = 'barrytg@netspace.net.au'
+                elif item.driver == "Barry Griffin":
+                    driver_email = 'barrytg@netspace.net.au'
 
-            driver_name = item.driver.split(" ")
-            notification = render_to_string('emails/notify_driver.txt', {
-                'car_number': item.car_number,
-                'driver_name': driver_name[0],
-                'details': invoice.service_items.all(),
-                'email': driver_email,
-                'description': item.description,
-                'third_party_ref': item.third_party_ref,
-                'ref:': item.ref,
-                'date': item.date,
-                'name': name,
-                'number': number,
-                'organization': organization,
-                'flight_number': item.flight_number,
-            })
-            driver_notification = EmailMessage('Job Notification', notification, 'admin@chauffuered-cars.com.au',
-                [driver_email])
-            driver_notification.content_subtype = "html"
-            driver_notification.send()
+                driver_name = item.driver.split(" ")
+                notification = render_to_string('emails/notify_driver.txt', {
+                    'car_number': item.car_number,
+                    'driver_name': driver_name[0],
+                    'details': invoice.service_items.all(),
+                    'email': driver_email,
+                    'description': item.description,
+                    'third_party_ref': item.third_party_ref,
+                    'ref:': item.ref,
+                    'date': item.date,
+                    'name': name,
+                    'number': number,
+                    'organization': organization,
+                    'flight_number': item.flight_number,
+                })
+                driver_notification = EmailMessage('Job Notification', notification, 'admin@chauffuered-cars.com.au',
+                    [driver_email])
+                driver_notification.content_subtype = "html"
+                driver_notification.send()
+    else:
+        pass
 
 def send_invoice(request, invoice):
     # Set Variables
-    name = item.client_full_name.split(" ")
-    mail = invoice.client_email
+    name = invoice.client_full_name.split(" ")
+    email = invoice.client_email
     admin_to = invoice.admin_confirm_to_address
     service_items = invoice.service_items.all()
     def get_total(service_items):
