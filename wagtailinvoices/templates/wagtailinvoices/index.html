@@ -5,29 +5,33 @@
 {% block content %}
 
     <header class="nice-padding">
-        <div class="row row-flush">
-            <div class="left col9">
-                <h1 class="icon icon-edit">{% blocktrans %}Invoices{% endblocktrans %} <span>{{ invoiceindex.url }}</span></h1>
-            </div>
-            <div class="right col3">
-                <a href="{% url 'wagtailinvoices_create' invoiceindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Create Invoice{% endblocktrans %}</a>
-            </div>
+        <div class="row">
+            <div class="left">
+            <div class='col'>
+                <h1 class="icon icon-edit">{% blocktrans %}Invoices{% endblocktrans %} </h1>
+                </div>
             <form class='col search-form' action='{% url 'wagtailinvoices_search' pk=invoiceindex.pk %}' method="GET">
     {% csrf_token %}
     {{form}}
-    <input type='submit' value="Search">
+<li class="submit visuallyhidden"><input type="submit" value="Search" class="button"></li>
 </form>
+</div>
+<div class='right'>
+            <div class="addbutton">
+                <a href="{% url 'wagtailinvoices_create' invoiceindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Create Invoice{% endblocktrans %}</a>
+            </div>
+            </div>
         </div>
     </header>
     {% if invoice_list.exists %}
         <table class="listing full-width">
             <colgroup>
             <thead><tr class="table-headers">
-                <th class="title">Title</th>
+                <th class="title">Client Name</th>
                 <th class='date'>Last Updated</th>
-                <th class="date">Issued</th>
+                <th class="date">Payment Status</th>
                 <th class='date'>Total</th>
-                <th class="date">ID</th>
+                <th class="date">Invoice No.</th>
             </tr></thead>
             <tbody>
             {% for invoice in invoice_list %}
@@ -47,7 +51,13 @@
                         {{ invoice.last_updated|date:'l d F, Y h:iA' }}
                     </td>
                     <td class='date'>
-                        {{ invoice.time|date:'l d F, Y' }}
+                        {% with invoice.payment_received as status %}
+                        {% if status %}
+                        <p style='color:#007f00;font-weight:bold;'>Paid</p>
+                        {% else %}
+                        <p style='color:#ff0033;font-weight:bold;'>Outstanding</p>
+                        {% endif %}
+                        {% endwith %}
                     </td>
                     <td class='date'>
                         ${{ invoice.total }}
