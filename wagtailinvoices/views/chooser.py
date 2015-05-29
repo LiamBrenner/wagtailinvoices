@@ -29,8 +29,6 @@ def index(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
-    #invoice = Invoice.objects.all()
-    invoice = get_object_or_404(Invoice, invoiceindex=invoiceindex, pk=pk)
     form = SearchForm()
 
     return render(request, 'wagtailinvoices/index.html', {
