@@ -160,6 +160,8 @@ def serve_pdf(invoice, request):
     terms = invoice.days_due
     due = invoice.due()
     ph_number = invoice.client_phone_number
+    status = invoice.job_status
+
     # Prepare context
     data = {
         'service_items': invoice.service_items.all(),
@@ -173,6 +175,7 @@ def serve_pdf(invoice, request):
         'terms': terms,
         'due': due,
         'ph_number': ph_number,
+        'status': status,
     }
 
     # Render html content through html template with context

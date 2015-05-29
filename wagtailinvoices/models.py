@@ -68,21 +68,14 @@ class AbstractInvoiceQuerySet(QuerySet):
         return search_backend.search(query_string, self)
 
 class AbstractInvoice(models.Model):
-
     invoiceindex = models.ForeignKey(Page)
-    time = models.DateTimeField('Issue date', default=timezone.now)
     uuid = UUIDField(auto=True, null=True, default=None)
 
-    panels = [
-        FieldPanel('time'),
-    ]
-
-    search_fields = (index.FilterField('time'),)
+    panels = []
 
     objects = AbstractInvoiceQuerySet.as_manager()
 
     class Meta:
-        ordering = ('-time',)
         abstract = True
 
     def get_nice_url(self):

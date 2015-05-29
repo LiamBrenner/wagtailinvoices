@@ -5,6 +5,8 @@ from wagtail.wagtailcore.models import Page
 
 from ..models import get_invoiceindex_content_types
 from ..forms import SearchForm
+from django.utils import timezone
+from datetime import timedelta
 
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
@@ -27,12 +29,14 @@ def index(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
+    #invoice = Invoice.objects.all()
+    invoice = get_object_or_404(Invoice, invoiceindex=invoiceindex, pk=pk)
     form = SearchForm()
 
     return render(request, 'wagtailinvoices/index.html', {
         'invoiceindex': invoiceindex,
         'invoice_list': invoice_list,
-        'form' : form,
+        'form': form,
     })
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view

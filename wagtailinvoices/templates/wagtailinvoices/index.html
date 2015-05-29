@@ -51,13 +51,7 @@
                         {{ invoice.last_updated|date:'l d F, Y h:iA' }}
                     </td>
                     <td class='date'>
-                        {% with invoice.payment_received as status %}
-                        {% if status %}
-                        <p style='color:#007f00;font-weight:bold;'>Paid</p>
-                        {% else %}
-                        <p style='color:#ff0033;font-weight:bold;'>Outstanding</p>
-                        {% endif %}
-                        {% endwith %}
+                        <p {% if invoice.is_due %}style='color:#ff0033;font-weight:bold;'{% elif invoice.status == "Cancelled" %}style='font-weight:bold;'{% elif invoice.status == "Pending" %}style='color:#FF6600;font-weight:bold;' {% elif invoice.status == "Paid" %}style='color:#007f00;font-weight:bold;' {% endif %}   >{{invoice.status}}</p>
                     </td>
                     <td class='date'>
                         ${{ invoice.total }}
