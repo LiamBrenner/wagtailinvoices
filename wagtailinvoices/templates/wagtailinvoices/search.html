@@ -28,7 +28,8 @@
             <colgroup>
             <thead><tr class="table-headers">
                 <th class="title">Client Name</th>
-                <th class='date'>Last Updated</th>
+                <th class='created'>Issued on</th>
+                <th class='updated'>Last Updated</th>
                 <th class="date">Payment Status</th>
                 <th class='date'>Total</th>
                 <th class="date">Invoice No.</th>
@@ -47,8 +48,11 @@
                             <li><a href="{% url 'wagtailinvoices_delete' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small button-secondary no">{% trans 'Delete' %}</a></li>
                         </ul>
                     </td>
-                    <td class='date'>
-                        {{ invoice.last_updated|date:'l d F, Y h:iA' }}
+                    <td class='issued'> {{ invoice.issue_date|date:"d M Y H:i"}} </td>
+                    <td class='updated'>
+                        {% if invoice.last_updated %}
+                        <div class="human-readable-date" title="{{ invoice.last_updated|date:"d M Y H:i" }}">
+                        {{ invoice.last_updated|timesince }} ago</div>{% endif %}
                     </td>
                     <td class='date'>
                         <p {% if invoice.status == "Cancelled" %}style='font-weight:bold;'{% elif invoice.is_due %}style='color:#ff0033;font-weight:bold;'{% elif invoice.status == "Pending" %}style='color:#FF6600;font-weight:bold;' {% elif invoice.status == "Paid" %}style='color:#007f00;font-weight:bold;' {% endif %}>{{invoice.status}}</p>
