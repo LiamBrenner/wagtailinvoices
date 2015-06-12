@@ -40,7 +40,7 @@
                     <td class="title">
                         <h2>
                             <a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}">
-                                {% if not invoice.client_full_name %}{{invoice.client_organization}}{% else %}{{ invoice }}{% endif %
+                                {% if not invoice.client_full_name %}{{invoice.client_organization}}{% else %}{{ invoice }}{% endif %}
                             </a>
                         </h2>
                         <ul class="actions">
