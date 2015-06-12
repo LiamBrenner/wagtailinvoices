@@ -15,12 +15,12 @@
             <ul>
                 <li class="actions">
                     <div class="dropdown dropup dropdown-button match-width">
-                            <input type="submit" value="{% trans 'Create and Send To Client' %}" />
+                            <input type="submit" value="{% trans 'Create and Send To Client' %}" name='{{send_button_name}}' />
                         <div class="dropdown-toggle icon icon-arrow-up"></div>
 
                         <ul role="menu">
                         <li>
-                            <input type="submit" value="{% trans 'Create and Save only' %}" name='{{send_button_name}}' />
+                            <input type="submit" value="{% trans 'Create and Save only' %}" />
                         </li>
                     </div>
                 </li>

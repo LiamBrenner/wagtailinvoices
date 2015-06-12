@@ -201,6 +201,7 @@ def serve_pdf(invoice, request):
 def create(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
     Invoice = invoiceindex.get_invoice_model()
+    send_button_name = 'send_invoice'
 
     invoice = Invoice(invoiceindex=invoiceindex)
     EditHandler = get_invoice_edit_handler(Invoice)
@@ -212,13 +213,30 @@ def create(request, pk):
 
         if form.is_valid():
             invoice = form.save()
-            send_invoice(request, invoice)
             notify_drivers(request, invoice)
             invoice.notify_drivers = False
             invoice.save()
 
-            messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
-            return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
+            def is_invoice_address_fault():
+                if invoice.client_organization or invoice.client_full_name:
+                    return False
+                else:
+                    return True
+
+            if is_invoice_address_fault() is True:
+                messages.error(request, _('You cannot create an invoice without providing a client organization or client full name!'))
+                edit_handler = EditHandler(instance=invoice, form=form)
+
+            elif send_button_name in request.POST:
+                if not invoice.client_email:
+                    messages.error(request, _('You cannot email an invoice without an email to send it to. Please save the invoice without emailing it!'))
+                    edit_handler = EditHandler(instance=invoice, form=form)
+                else:
+                    send_invoice(request, invoice)
+            else:
+                messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
+                return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
+
         else:
             messages.error(request, _('The invoice could not be created due to validation errors'))
             edit_handler = EditHandler(instance=invoice, form=form)
@@ -229,6 +247,7 @@ def create(request, pk):
     return render(request, 'wagtailinvoices/create.html', {
         'invoiceindex': invoiceindex,
         'form': form,
+        'send_button_name': send_button_name,
         'edit_handler': edit_handler,
     })
 
@@ -253,8 +272,22 @@ def edit(request, pk, invoice_pk):
             invoice.notify_drivers = False
             invoice.save()
 
-            if send_button_name in request.POST:
-                send_invoice(request, invoice)
+            def is_invoice_address_fault():
+                if invoice.client_organization or invoice.client_full_name:
+                    return False
+                else:
+                    return True
+
+            if is_invoice_address_fault() is True:
+                messages.error(request, _('You cannot create an invoice without providing a client organization or client full name!'))
+                edit_handler = EditHandler(instance=invoice, form=form)
+
+            elif send_button_name in request.POST:
+                if not invoice.client_email:
+                    messages.error(request, _('You cannot email an invoice without an email to send it to. Please save the invoice without emailing it!'))
+                    edit_handler = EditHandler(instance=invoice, form=form)
+                else:
+                    send_invoice(request, invoice)
 
             elif print_button_name in request.POST:
                 serve_pdf(invoice, request)
