@@ -27,7 +27,7 @@
         <table class="listing full-width">
             <colgroup>
             <thead><tr class="table-headers">
-                <th class="title">Client Name</th>
+                <th class="title">Client Name/Organization</th>
                 <th class='created'>Issued on</th>
                 <th class='updated'>Last Updated</th>
                 <th class="date">Payment Status</th>
@@ -40,7 +40,7 @@
                     <td class="title">
                         <h2>
                             <a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}">
-                                {{ invoice }}
+                                {% if not invoice.client_full_name %}{{invoice.client_organization}}{% else %}{{ invoice }}{% endif %}
                             </a>
                         </h2>
                         <ul class="actions">

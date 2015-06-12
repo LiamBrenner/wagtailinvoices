@@ -80,6 +80,7 @@ def send_invoice(request, invoice):
     # Set Variables
     name = invoice.client_full_name
     email = invoice.client_email
+    organization = invoice.client_organization
     admin_to = invoice.admin_confirm_to_address
     service_items = invoice.service_items.all()
 
@@ -101,6 +102,7 @@ def send_invoice(request, invoice):
         'gst': gst,
         'link': link,
         'invoice': invoice,
+        'organization': organization,
         'id': id,
         'service_items': service_items,
     })
@@ -118,6 +120,7 @@ def send_invoice(request, invoice):
         'link': link,
         'invoice': invoice,
         'id': id,
+        'organization': organization,
         'service_items': service_items,
     })
     customer_email = EmailMessage('Invoice #' + id, invoicemessage, "admin@tasmanianexclusivetours.com.au",
