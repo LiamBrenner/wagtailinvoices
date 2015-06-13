@@ -233,13 +233,15 @@ def create(request, pk):
                     edit_handler = EditHandler(instance=invoice, form=form)
                 else:
                     send_invoice(request, invoice)
+                    messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
+                    return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
             else:
                 messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
                 return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
-
         else:
             messages.error(request, _('The invoice could not be created due to validation errors'))
             edit_handler = EditHandler(instance=invoice, form=form)
+
     else:
         form = EditForm(instance=invoice)
         edit_handler = EditHandler(instance=invoice, form=form)
@@ -288,16 +290,19 @@ def edit(request, pk, invoice_pk):
                     edit_handler = EditHandler(instance=invoice, form=form)
                 else:
                     send_invoice(request, invoice)
+                    messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
+                    return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
 
             elif print_button_name in request.POST:
                 serve_pdf(invoice, request)
 
-            messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
-            return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
+            else:
+                messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
+                return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
         else:
             messages.error(request, _('The invoice could not be updated due to validation errors'))
             edit_handler = EditHandler(instance=invoice, form=form)
-    else:
+    else:        
         form = EditForm(instance=invoice)
         edit_handler = EditHandler(instance=invoice, form=form)
 
