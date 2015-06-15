@@ -1,5 +1,7 @@
 import os
 import StringIO
+import vobject
+from email.mime.text import MIMEText
 from xhtml2pdf import pisa
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
@@ -31,6 +33,27 @@ get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 
 def notify_drivers(request, invoice):
+    def ical():
+        cal = vobject.iCalendar()
+        cal.add('method').value = 'PUBLISH'  # IE/Outlook needs this
+
+        vevent = cal.add('vevent')
+        vevent.add('dtstart').value = self.course.startdate
+        vevent.add('dtend').value = self.course.startdate
+        vevent.add('summary').value='get details template here or just post url'
+        vevent.add('uid').value=str(self.id)
+        vevent.add('dtstamp').value = self.created
+
+        icalstream = cal.serialize()
+        response = HttpResponse(icalstream, mimetype='text/calendar')
+        response['Filename'] = 'shifts.ics'  # IE needs this
+        response['Content-Disposition'] = 'attachment; filename=shifts.ics'
+        return response
+        part = MIMEText(icalstream,'calendar')
+        part.add_header('Filename','shifts.ics') 
+        part.add_header('Content-Disposition','attachment; filename=shifts.ics') 
+        return part
+
     if invoice.notify_drivers is True:
         service_items = invoice.service_items.all()
         name = invoice.client_full_name
@@ -70,8 +93,12 @@ def notify_drivers(request, invoice):
                 })
                 driver_notification = EmailMessage('Job Notification', notification, 'admin@chauffuered-cars.com.au',
                     [driver_email])
-                driver_notification.content_subtype = "html"
-                driver_notification.send()
+                driver_notification.attach_alternative(calendar.as_string(), "text/calendar; method=REQUEST; charset=\"UTF-8\"")
+                driver_notification.content_subtype = 'calendar'
+                '''
+                    driver_notification.content_subtype = "html"
+                    driver_notification.send()
+                '''
     else:
         pass
 
@@ -215,6 +242,11 @@ def create(request, pk):
             invoice = form.save()
             notify_drivers(request, invoice)
             invoice.notify_drivers = False
+            n = 0
+            for item in invoice.service_items.all():
+                n = n + 1
+                item.ref = str(invoice.id) + '-' + str(n)
+                item.save()
             invoice.save()
 
             def is_invoice_address_fault():
@@ -272,7 +304,11 @@ def edit(request, pk, invoice_pk):
             invoice = form.save()
             notify_drivers(request, invoice)
             invoice.notify_drivers = False
-            invoice.save()
+            n = 0
+            for item in invoice.service_items.all():
+                n = n + 1
+                item.ref = str(invoice.id) + '-' + str(n)
+                item.save()
 
             def is_invoice_address_fault():
                 if invoice.client_organization or invoice.client_full_name:
