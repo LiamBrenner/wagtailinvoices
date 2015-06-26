@@ -253,11 +253,13 @@ def create(request, pk):
             invoice = form.save()
             notify_drivers(request, invoice)
             invoice.notify_drivers = False
+            '''
             n = 0
             for item in invoice.service_items.all():
                 n = n + 1
                 item.ref = str(invoice.id) + '-' + str(n)
                 item.save()
+            '''
             invoice.save()
 
             def is_invoice_address_fault():
@@ -315,11 +317,13 @@ def edit(request, pk, invoice_pk):
             invoice = form.save()
             notify_drivers(request, invoice)
             invoice.notify_drivers = False
+            '''
             n = 0
             for item in invoice.service_items.all():
                 n = n + 1
                 item.ref = str(invoice.id) + '-' + str(n)
                 item.save()
+            '''
             invoice.save()
 
             def is_invoice_address_fault():
