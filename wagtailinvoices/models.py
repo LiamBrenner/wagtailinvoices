@@ -59,6 +59,7 @@ class InvoiceIndexMixin(RoutablePageMixin):
             raise ValueError('Can not resolve {0}.invoice_model in to a model: {1!r}'.format(
                 cls.__name__, cls.invoice_model))
 
+
 class AbstractInvoiceQuerySet(QuerySet):
     def search(self, query_string, fields=None, backend='default'):
         """
@@ -66,6 +67,7 @@ class AbstractInvoiceQuerySet(QuerySet):
         """
         search_backend = get_search_backend(backend)
         return search_backend.search(query_string, self)
+
 
 class AbstractInvoice(models.Model):
     invoiceindex = models.ForeignKey(Page)
