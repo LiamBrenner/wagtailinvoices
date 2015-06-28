@@ -101,7 +101,11 @@ def notify_drivers(request, invoice):
                     notification,
                     'admin@chauffuered-cars.com.au',
                     [driver_email])
-                driver_notification.attach('emails/driver_calendar_event.ics', 'text/calendar')
+                bar = None
+                invite = render_to_string('emails/driver_calendar_event.ics', {
+                    'foo': bar,
+                })
+                driver_notification.attach('emails/driver_calendar_event.ics')
                 driver_notification.content_subtype = 'text/calendar'
                 driver_notification.send()
     else:
