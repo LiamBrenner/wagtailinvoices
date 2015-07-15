@@ -12,7 +12,7 @@ from django.db.models.query import QuerySet
 from uuidfield import UUIDField
 
 
-from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin
+from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.utils import resolve_model_string
@@ -35,19 +35,19 @@ def get_invoiceindex_content_types():
 
 class InvoiceIndexMixin(RoutablePageMixin):
 
-    class Meta: 
+    class Meta:
         pass
 
     invoice_model = None
     subpage_types = []
 
-    subpage_urls = (
-        url(r'^(?P<uuid>[0-9a-f-]+)/$', 'v_invoice', name='invoice'),
-        url(r'^(?P<uuid>[0-9a-f-]+)/pdf/$', 'v_invoice_pdf', name='invoice_pdf')
-    )
+    @route(r'^(?P<uuid>[0-9a-f-]+)/$', name='invoice')
+    def v_invoice(s, r, **k):
+        return frontend.invoice_detail(r, s, **k)
 
-    v_invoice = lambda s, r, **k: frontend.invoice_detail(r, s, **k)
-    v_invoice_pdf = lambda s, r, **k: frontend.invoice_pdf(r, s, **k)
+    @route(r'^(?P<uuid>[0-9a-f-]+)/pdf/$', name='invoice_pdf')
+    def v_invoice_pdf(s, r, **k):
+        return frontend.invoice_pdf(r, s, **k)
 
     @classmethod
     def get_invoice_model(cls):

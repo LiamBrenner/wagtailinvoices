@@ -24,7 +24,7 @@ setup(
     author_email='liam.brenner@gmail.com',
     url='https://bitbucket.org/sablewalnut/wagtailinvoices',
 
-    install_requires=['wagtail>=0.9'],
+    install_requires=['wagtail>=1.0b2'],
     zip_safe=False,
     license='BSD License',
 
