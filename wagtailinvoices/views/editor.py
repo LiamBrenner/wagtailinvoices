@@ -76,7 +76,7 @@ def notify_drivers(request, invoice):
         pass
 
 
-def send_invoice(request, invoice):
+def send_invoice(request, invoice, admin=False):
     # Set Variables
     name = invoice.client_full_name
     email = invoice.client_email
@@ -94,39 +94,47 @@ def send_invoice(request, invoice):
     link = request.build_absolute_uri(invoice.url())
     id = str(invoice.id)
     ph_number = invoice.client_phone_number
-    adminmessage = render_to_string('emails/admin_invoice_message.txt', {
-        'name': name,
-        'ph_number': ph_number,
-        'email': email,
-        'total': total,
-        'gst': gst,
-        'link': link,
-        'invoice': invoice,
-        'organization': organization,
-        'id': id,
-        'service_items': service_items,
-    })
-    # Email to business owner
-    admin_email = EmailMessage('Invoice #' + id, adminmessage, admin_to,
-        [admin_to])
-    admin_email.content_subtype = "html"
-    admin_email.send()
+
+    def admin_email():
+        adminmessage = render_to_string('emails/admin_invoice_message.txt', {
+            'name': name,
+            'ph_number': ph_number,
+            'email': email,
+            'total': total,
+            'gst': gst,
+            'link': link,
+            'invoice': invoice,
+            'organization': organization,
+            'id': id,
+            'service_items': service_items,
+        })
+        # Email to business owner
+        admin_email = EmailMessage('Invoice #' + id, adminmessage, admin_to,
+            [admin_to])
+        admin_email.content_subtype = "html"
+        admin_email.send()
+
     # Customer Email
     name = name.split(" ")
-    invoicemessage = render_to_string('emails/invoice_message.txt', {
-        'name': name[0],
-        'total': total,
-        'gst': gst,
-        'link': link,
-        'invoice': invoice,
-        'id': id,
-        'organization': organization,
-        'service_items': service_items,
-    })
-    customer_email = EmailMessage('Invoice #' + id, invoicemessage, "admin@tasmanianexclusivetours.com.au",
-                 [email])
-    customer_email.content_subtype = "html"
-    customer_email.send()
+
+    def customer_email():
+        invoicemessage = render_to_string('emails/invoice_message.txt', {
+            'name': name[0],
+            'total': total,
+            'gst': gst,
+            'link': link,
+            'invoice': invoice,
+            'id': id,
+            'organization': organization,
+            'service_items': service_items,
+        })
+        customer_email = EmailMessage('Invoice #' + id, invoicemessage, "admin@chauffuered-cars.com.au",
+                     [email])
+        customer_email.content_subtype = "html"
+        customer_email.send()
+    customer_email()
+    if admin is True:
+        admin_email()
 
 
 def serve_pdf(invoice, request):
@@ -232,7 +240,7 @@ def create(request, pk):
                     messages.error(request, _('You cannot email an invoice without an email to send it to. Please save the invoice without emailing it!'))
                     edit_handler = EditHandler(instance=invoice, form=form)
                 else:
-                    send_invoice(request, invoice)
+                    send_invoice(request, invoice, admin=True)
                     messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
                     return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
             else:
