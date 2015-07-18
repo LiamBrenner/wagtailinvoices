@@ -34,30 +34,6 @@ get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 def notify_drivers(request, invoice):
     service_items = invoice.service_items.all()
-
-    '''
-    def ical():
-        cal = vobject.iCalendar()
-        cal.add('method').value = 'PUBLISH'  # IE/Outlook needs this
-
-        vevent = cal.add('vevent')
-        vevent.add('dtstart').value = invoice.date
-        vevent.add('dtend').value = invoice.date
-        vevent.add('summary').value = service_items
-        vevent.add('uid').value = str(self.id)
-        vevent.add('dtstamp').value = timezone.now()
-
-        icalstream = cal.serialize()
-        response = HttpResponse(icalstream, mimetype='text/calendar')
-        response['Filename'] = 'shifts.ics'  # IE needs this
-        response['Content-Disposition'] = 'attachment; filename=shifts.ics'
-        return response
-        part = MIMEText(icalstream,'calendar')
-        part.add_header('Filename','shifts.ics') 
-        part.add_header('Content-Disposition','attachment; filename=shifts.ics') 
-        return part
-        '''
-
     if invoice.notify_drivers is True:
         # Set Vars
         service_items = invoice.service_items.all()
@@ -101,12 +77,7 @@ def notify_drivers(request, invoice):
                     notification,
                     'admin@chauffuered-cars.com.au',
                     [driver_email])
-                bar = None
-                invite = render_to_string('emails/driver_calendar_event.ics', {
-                    'foo': bar,
-                })
-                driver_notification.attach('emails/driver_calendar_event.ics')
-                driver_notification.content_subtype = 'text/calendar'
+                driver_notification.content_subtype = "html"
                 driver_notification.send()
     else:
         pass
