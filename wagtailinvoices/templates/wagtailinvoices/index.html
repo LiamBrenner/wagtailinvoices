@@ -31,7 +31,6 @@
                 <th class='created'>Issued on</th>
                 <th class='updated'>Last Updated</th>
                 <th class="date">Payment Status</th>
-                <th class='overdue_by'>Days Overdue</th>
                 <th class='date'>Total</th>
                 <th class="date">Invoice No.</th>
             </tr></thead>
@@ -56,12 +55,16 @@
                         {{ invoice.last_updated|timesince }} ago</div>{% endif %}
                     </td>
                     <td class='date'>
-                        <p {% if invoice.status == "Cancelled" %}style='font-weight:bold;'{% elif invoice.is_due %}style='color:#ff0033;font-weight:bold;'{% elif invoice.status == "Pending" %}style='color:#FF6600;font-weight:bold;' {% elif invoice.status == "Paid" %}style='color:#007f00;font-weight:bold;' {% endif %}>{{invoice.status}}</p>
-                    </td>
-                    <td class='overdue_by' style='color:red;'>
-                    {% if invoice.days_overdue > 2 %}
-                    <b>{{invoice.days_overdue}}</b>
-                    {% endif %}
+                        <p {% if invoice.status == "Cancelled" %}style='font-weight:bold;'
+                        {% elif invoice.is_due %}style='color:#ff0033;font-weight:bold;'
+                        {% elif invoice.status == "Pending" %}style='color:#FF6600;font-weight:bold;' 
+                        {% elif invoice.status == "Paid" %}style='color:#007f00;font-weight:bold;' 
+                        {% endif %}>
+                        {{invoice.status}} 
+                        {% if invoice.days_overdue > 0 %}
+                         ({{invoice.days_overdue}} Days)
+                        {% endif %}
+                        </p>
                     </td>
                     <td class='date'>
                         ${{ invoice.total }}
