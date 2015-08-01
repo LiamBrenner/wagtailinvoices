@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
+from django.conf import settings
 
 
 # TODO Swap with django.utils.lru_cache.lru_cache at Django 1.7
@@ -20,6 +21,9 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailcore.models import Page
 
 from ..models import get_invoiceindex_content_types
+from django.utils.module_loading import import_string
+
+validation = import_string(getattr(settings, 'WAGTAIL_INVOICES_VALIDATION', 'wagtailinvoices.utils.validation.validation'))
 
 
 def get_invoice_edit_handler(Invoice):
@@ -32,58 +36,31 @@ get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 def send_invoice(request, invoice, admin=False):
     # Set Variables
-    name = invoice.client_full_name
-    email = invoice.client_email
-    organization = invoice.client_organization
-    admin_to = invoice.admin_confirm_to_address
-    service_items = invoice.service_items.all()
-
-    def get_total(service_items):
-        amount = 0
-        for i in service_items:
-            amount = amount + i.amount
-        return amount
-    total = get_total(invoice.service_items.all())
-    gst = total / 11
+    admin_email_address = settings.ADMIN_EMAIL
     link = request.build_absolute_uri(invoice.url())
     id = str(invoice.id)
-    ph_number = invoice.client_phone_number
 
     def admin_email():
         adminmessage = render_to_string('emails/admin_invoice_message.txt', {
-            'name': name,
-            'ph_number': ph_number,
-            'email': email,
-            'total': total,
-            'gst': gst,
-            'link': link,
             'invoice': invoice,
-            'organization': organization,
-            'id': id,
-            'service_items': service_items,
-        })
+            'link': link,
+            })
         # Email to business owner
-        admin_email = EmailMessage('Invoice #' + id, adminmessage, admin_to,
-            [admin_to])
+        admin_email = EmailMessage(
+            'Invoice #' + id,
+            adminmessage,
+            admin_email_address,
+            [admin_email_address])
         admin_email.content_subtype = "html"
         admin_email.send()
 
     # Customer Email
-    name = name.split(" ")
-
     def customer_email():
         invoicemessage = render_to_string('emails/invoice_message.txt', {
-            'name': name[0],
-            'total': total,
-            'gst': gst,
-            'link': link,
             'invoice': invoice,
-            'id': id,
-            'organization': organization,
-            'service_items': service_items,
+            'link': link,
         })
-        customer_email = EmailMessage('Invoice #' + id, invoicemessage, "admin@chauffuered-cars.com.au",
-                     [email])
+        customer_email = EmailMessage('Invoice #' + id, invoicemessage, admin_email, [])
         customer_email.content_subtype = "html"
         customer_email.send()
     customer_email()
@@ -129,6 +106,7 @@ def serve_pdf(invoice, request, data):
     # file.close()            # Don't forget to close the file handle
     return HttpResponse(file, content_type='application/pdf')
 
+
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
 def create(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
@@ -140,31 +118,19 @@ def create(request, pk):
     EditForm = EditHandler.get_form_class(Invoice)
 
     if request.method == 'POST':
+
         form = EditForm(request.POST, request.FILES, instance=invoice)
         invoice.service_items.all()
-
-        if form.is_valid():
+        is_sending_email = send_button_name in request.POST
+        if form.is_valid() and validation(request, invoice, is_sending_email):
             invoice = form.save()
             invoice.save()
 
-            def is_invoice_address_fault():
-                if invoice.client_organization or invoice.client_full_name:
-                    return False
-                else:
-                    return True
+            if is_sending_email:
+                send_invoice(request, invoice)
+                messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
+                return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
 
-            if is_invoice_address_fault() is True:
-                messages.error(request, _('You cannot create an invoice without providing a client organization or client full name!'))
-                edit_handler = EditHandler(instance=invoice, form=form)
-
-            elif send_button_name in request.POST:
-                if not invoice.client_email:
-                    messages.error(request, _('You cannot email an invoice without an email to send it to. Please save the invoice without emailing it!'))
-                    edit_handler = EditHandler(instance=invoice, form=form)
-                else:
-                    send_invoice(request, invoice, admin=True)
-                    messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
-                    return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
             else:
                 messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
                 return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
@@ -198,39 +164,29 @@ def edit(request, pk, invoice_pk):
     if request.method == 'POST':
         form = EditForm(request.POST, request.FILES, instance=invoice)
 
-        if form.is_valid():
+        is_sending_email = send_button_name in request.POST
+        is_rendering_pdf = print_button_name in request.POST
+
+        if form.is_valid() and validation(request, invoice, is_sending_email):
             invoice = form.save()
             invoice.save()
 
-            def is_invoice_address_fault():
-                if invoice.client_organization or invoice.client_full_name:
-                    return False
-                else:
-                    return True
+            if is_sending_email:
+                send_invoice(request, invoice)
+                messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
+                return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
 
-            if is_invoice_address_fault() is True:
-                messages.error(request, _('You cannot create an invoice without providing a client organization or client full name!'))
-                edit_handler = EditHandler(instance=invoice, form=form)
-
-            elif send_button_name in request.POST:
-                if not invoice.client_email:
-                    messages.error(request, _('You cannot email an invoice without an email to send it to. Please save the invoice without emailing it!'))
-                    edit_handler = EditHandler(instance=invoice, form=form)
-                else:
-                    send_invoice(request, invoice)
-                    messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
-                    return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
-
-            elif print_button_name in request.POST:
+            elif is_rendering_pdf:
                 serve_pdf(invoice, request)
 
             else:
                 messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
                 return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
+
         else:
             messages.error(request, _('The invoice could not be updated due to validation errors'))
             edit_handler = EditHandler(instance=invoice, form=form)
-    else:        
+    else:
         form = EditForm(instance=invoice)
         edit_handler = EditHandler(instance=invoice, form=form)
 
