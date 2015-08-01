@@ -14,6 +14,7 @@ from django.db.models.query import QuerySet
 from django.template.loader import get_template
 from django.template import Context
 from django.conf import settings
+from django.utils import timezone
 from django.http import HttpResponse
 from uuidfield import UUIDField
 
@@ -65,6 +66,7 @@ class InvoiceIndexMixin(RoutablePageMixin):
             raise ValueError('Can not resolve {0}.invoice_model in to a model: {1!r}'.format(
                 cls.__name__, cls.invoice_model))
 
+
 class AbstractInvoiceQuerySet(QuerySet):
     def search(self, query_string, fields=None, backend='default'):
         """
@@ -73,11 +75,18 @@ class AbstractInvoiceQuerySet(QuerySet):
         search_backend = get_search_backend(backend)
         return search_backend.search(query_string, self)
 
+
 class AbstractInvoice(models.Model):
     invoiceindex = models.ForeignKey(Page)
     uuid = UUIDField(auto=True, null=True, default=None)
+    email = models.EmailField(blank=True)
+    issue_date = models.DateTimeField('Issue date', default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
 
-    panels = []
+    panels = [
+        FieldPanel('issue_date'),
+        FieldPanel('email'),
+    ]
 
     objects = AbstractInvoiceQuerySet.as_manager()
 
