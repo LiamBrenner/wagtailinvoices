@@ -24,49 +24,7 @@
         </div>
     </header>
     {% if invoice_list %}
-        <table class="listing full-width">
-            <colgroup>
-            <thead><tr class="table-headers">
-                <th class="title">Client Name</th>
-                <th class='created'>Issued on</th>
-                <th class='updated'>Last Updated</th>
-                <th class="date">Payment Status</th>
-                <th class='date'>Total</th>
-                <th class="date">Invoice No.</th>
-            </tr></thead>
-            <tbody>
-            {% for invoice in invoice_list|dictsortreversed:"issue_date" %}
-                <tr>
-                    <td class="title">
-                        <h2>
-                            <a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}">
-                                {% if not invoice.client_full_name %}{{invoice.client_organization}}{% else %}{{ invoice }}{% endif %}
-                            </a>
-                        </h2>
-                        <ul class="actions">
-                            <li><a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small">{% trans 'Edit' %}</a></li>
-                            <li><a href="{% url 'wagtailinvoices_delete' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small button-secondary no">{% trans 'Delete' %}</a></li>
-                        </ul>
-                    </td>
-                    <td class='issued'> {{ invoice.issue_date|date:"d M Y H:i"}} </td>
-                    <td class='updated'>
-                        {% if invoice.last_updated %}
-                        <div class="human-readable-date" title="{{ invoice.last_updated|date:"d M Y H:i" }}">
-                        {{ invoice.last_updated|timesince }} ago</div>{% endif %}
-                    </td>
-                    <td class='date'>
-                        <p {% if invoice.status == "Cancelled" %}style='font-weight:bold;'{% elif invoice.is_due %}style='color:#ff0033;font-weight:bold;'{% elif invoice.status == "Pending" %}style='color:#FF6600;font-weight:bold;' {% elif invoice.status == "Paid" %}style='color:#007f00;font-weight:bold;' {% endif %}>{{invoice.status}}</p>
-                    </td>
-                    <td class='date'>
-                        ${{ invoice.total }}
-                    </td>
-                    <td class="date">
-                        {{ invoice.id }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        {% include 'wagtailinvoices/invoice_list.html' %}
     {% else %}
         <div class="nice-padding">Your search results didn't return anything!</div>
     {% endif %}

@@ -1,0 +1,36 @@
+{% load i18n %}
+<table class="listing full-width">
+            <colgroup>
+            <thead><tr class="table-headers">
+                <th class="title">Name</th>
+                <th class='issued_on'>Issued on</th>
+                <th class="last_updated">Last Updated</th>
+                <th class="date">Invoice No.</th>
+            </tr></thead>
+            <tbody>
+            {% for invoice in invoice_list|dictsortreversed:"issue_date" %}
+                <tr>
+                    <td class="title">
+                        <h2>
+                            <a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}">
+                                {% if not invoice.client_full_name %}{{invoice.client_organization}}{% else %}{{ invoice }}{% endif %}
+                            </a>
+                        </h2>
+                        <ul class="actions">
+                            <li><a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small">{% trans 'Edit' %}</a></li>
+                            <li><a href="{% url 'wagtailinvoices_delete' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small button-secondary no">{% trans 'Delete' %}</a></li>
+                        </ul>
+                    </td>
+                    <td class='issued'> {{ invoice.issue_date|date:"d M Y H:i"}} </td>
+                    <td class='updated'>
+                        {% if invoice.last_updated %}
+                        <div class="human-readable-date" title="{{ invoice.last_updated|date:"d M Y H:i" }}">
+                        {{ invoice.last_updated|timesince }} ago</div>{% endif %}
+                    </td>
+                    <td class="date">
+                        {{ invoice.id }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+</table>
