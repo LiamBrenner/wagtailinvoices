@@ -1,24 +1,22 @@
-===========
-wagtailinvoices
-===========
+#wagtailinvoices
+
 
 A plugin for Wagtail that provides invoice functionality
+[Documentation on ReadTheDocs](https://wagtailinvoices.readthedocs.org/en/latest/)
+##Installing
 
-Installing
-==========
 
-Install using pip::
-
-    pip install wagtailinvoices
-
+Install using pip
+```
+pip install wagtailinvoices
+```
 It works with Wagtail 1.0b2 and upwards.
 
-Using
-=====
+##Using
 
-Create invoice models for your application that inherit from the relevant ``wagtailinvoices`` models:
+Create invoice models for your application that inherit from the relevant `wagtailinvoices` models:
 
-.. code:: python
+``` python
 
     from django.db import models
 
@@ -41,13 +39,17 @@ Create invoice models for your application that inherit from the relevant ``wagt
         # Invoice is a normal Django model, *not* a Wagtail Page.
         # Add any fields required for your page.
         # It already has ``date`` field, and a link to its parent ``InvoiceIndex`` Page
-        title = models.CharField(max_length=255)
-        body = RichTextField()
+        full_name = models.CharField(max_length=255)
+        organization = models.CharField(max_length=255)
+        phone_number = models.CharField(max_length=255)
+        
 
         panels = [
-            FieldPanel('title', classname='full title'),
-            FieldPanel('body', classname='full'),
+            FieldPanel('full_name', classname='full'),
+            FieldPanel('organization'),
+            FieldPanel('phone_number')
         ] + AbstractInvoice.panels
 
         def __unicode__(self):
-            return self.title
+            return self.full_name
+```

@@ -1,0 +1,7 @@
+site_name: wagtailinvoices
+theme: readthedocs
+pages:
+- Home: 'index.md'
+- Getting Started: 'getting_started.md'
+- Template Rendering: 'template_rendering.md'
+- Advanced: 'advanced.md'
