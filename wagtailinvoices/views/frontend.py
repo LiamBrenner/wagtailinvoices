@@ -16,6 +16,7 @@ def invoice_detail(request, invoiceindex, uuid):
     invoice = get_object_or_404(InvoiceItem, invoiceindex=invoiceindex, uuid=uuid)
     return invoice.serve(request)
 
+
 def invoice_pdf(request, invoiceindex, uuid):
     InvoiceItem = invoiceindex.get_invoice_model()
     try:

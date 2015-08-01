@@ -30,52 +30,6 @@ def get_invoice_edit_handler(Invoice):
 get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 
-def notify_drivers(request, invoice):
-    if invoice.notify_drivers is True:
-        service_items = invoice.service_items.all()
-        name = invoice.client_full_name
-        number = invoice.client_phone_number
-        organization = invoice.client_organization
-
-        for item in service_items:
-            if item.driver == "Not Applicable":
-                pass
-            else:
-                if item.driver == "John Casimaty":
-                    driver_email = 'john.casimaty@gmail.com'
-
-                elif item.driver == "Colin Parramore":
-                    driver_email = 'colinparramore@gmail.com'
-
-                elif item.driver == "Allan Cerny":
-                    driver_email = 'ab.cerny@bigpond.com'
-
-                elif item.driver == "Barry Griffin":
-                    driver_email = 'barrytg@netspace.net.au'
-
-                driver_name = item.driver.split(" ")
-                notification = render_to_string('emails/notify_driver.txt', {
-                    'car_number': item.car_number,
-                    'driver_name': driver_name[0],
-                    'details': invoice.service_items.all(),
-                    'email': driver_email,
-                    'description': item.description,
-                    'third_party_ref': item.third_party_ref,
-                    'ref:': item.ref,
-                    'date': item.date,
-                    'name': name,
-                    'number': number,
-                    'organization': organization,
-                    'flight_number': item.flight_number,
-                })
-                driver_notification = EmailMessage('Job Notification', notification, 'admin@chauffuered-cars.com.au',
-                    [driver_email])
-                driver_notification.content_subtype = "html"
-                driver_notification.send()
-    else:
-        pass
-
-
 def send_invoice(request, invoice, admin=False):
     # Set Variables
     name = invoice.client_full_name
@@ -137,7 +91,7 @@ def send_invoice(request, invoice, admin=False):
         admin_email()
 
 
-def serve_pdf(invoice, request):
+def serve_pdf(invoice, request, data):
     # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
 
     def link_callback(uri, rel):
@@ -160,44 +114,14 @@ def serve_pdf(invoice, request):
                         (sUrl, mUrl))
         return path
 
-    # Set variables
-    id = invoice.id
-    total = invoice.total()
-    gst = total / 11
-    email = invoice.client_email
-    name = invoice.client_full_name
-    date = invoice.time
-    address = invoice.client_address
-    terms = invoice.days_due
-    due = invoice.due()
-    ph_number = invoice.client_phone_number
-    status = invoice.job_status
-
-    # Prepare context
-    data = {
-        'service_items': invoice.service_items.all(),
-        'total': total,
-        'id': id,
-        'gst': gst,
-        'name': name,
-        'email': email,
-        'date': date,
-        'address': address,
-        'terms': terms,
-        'due': due,
-        'ph_number': ph_number,
-        'status': status,
-    }
-
     # Render html content through html template with context
     template = get_template('invoicelist/invoice_pdf.html')
-    html = template.render(Context(data))
+    html = template.render(Context(invoice))
 
     # Write PDF to file
     # file = open(os.path.join(settings.MEDIA_ROOT, 'Invoice #' + str(id) + '.pdf'), "w+b")
     file = StringIO.StringIO()
-    pisaStatus = pisa.CreatePDF(html, dest=file,
-            link_callback = link_callback)
+    pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
 
     # Return PDF document through a Django HTTP response
     file.seek(0)
@@ -221,8 +145,6 @@ def create(request, pk):
 
         if form.is_valid():
             invoice = form.save()
-            notify_drivers(request, invoice)
-            invoice.notify_drivers = False
             invoice.save()
 
             def is_invoice_address_fault():
@@ -278,8 +200,6 @@ def edit(request, pk, invoice_pk):
 
         if form.is_valid():
             invoice = form.save()
-            notify_drivers(request, invoice)
-            invoice.notify_drivers = False
             invoice.save()
 
             def is_invoice_address_fault():

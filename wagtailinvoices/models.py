@@ -1,14 +1,20 @@
 from __future__ import absolute_import, unicode_literals
 
+import StringIO
+import os
+from xhtml2pdf import pisa
+
 from six import text_type, string_types
 
-from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.shortcuts import render
-from django.utils import timezone
 from django.utils.text import slugify
 from django.db.models.query import QuerySet
+from django.template.loader import get_template
+from django.template import Context
+from django.conf import settings
+from django.http import HttpResponse
 from uuidfield import UUIDField
 
 
@@ -99,6 +105,43 @@ class AbstractInvoice(models.Model):
             'invoice': self,
         })
 
+    def serve_pdf(self, request):
+        # Convert HTML URIs to absolute system paths
+        def link_callback(uri, rel):
+            # use short variable names
+            sUrl = settings.STATIC_URL
+            sRoot = settings.STATIC_ROOT
+            mUrl = settings.MEDIA_URL
+            mRoot = settings.MEDIA_ROOT
+
+            # convert URIs to absolute system paths
+            if uri.startswith(mUrl):
+                path = os.path.join(mRoot, uri.replace(mUrl, ""))
+            elif uri.startswith(sUrl):
+                path = os.path.join(sRoot, uri.replace(sUrl, ""))
+
+            # make sure that file exists
+            if not os.path.isfile(path):
+                    raise Exception(
+                            'media URI must start with %s or %s' % \
+                            (sUrl, mUrl))
+            return path
+
+        # Render html content through html template with context
+        template = get_template('invoicelist/invoice_pdf.html')
+        html = template.render(Context({'invoice': self}))
+        print type(self)
+
+        # Write PDF to file
+        file = StringIO.StringIO()
+        pisaStatus = pisa.CreatePDF(
+            html,
+            dest=file,
+            link_callback=link_callback)
+
+        # Return PDF document through a Django HTTP response
+        file.seek(0)
+        return HttpResponse(file, content_type='application/pdf')
 
 # Need to import this down here to prevent circular imports :(
 from .views import frontend
