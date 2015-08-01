@@ -5,8 +5,6 @@ from wagtail.wagtailcore.models import Page
 
 from ..models import get_invoiceindex_content_types
 from ..forms import SearchForm
-from django.utils import timezone
-from datetime import timedelta
 
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view

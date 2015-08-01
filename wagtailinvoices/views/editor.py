@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.utils.functional import memoize
 
 from wagtail.wagtailadmin.edit_handlers import (
-    ObjectList, extract_panel_definitions_from_model_class, get_form_for_model)
+    ObjectList, extract_panel_definitions_from_model_class)
 from wagtail.wagtailcore.models import Page
 
 from ..models import get_invoiceindex_content_types
