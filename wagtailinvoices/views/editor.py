@@ -67,8 +67,7 @@ def send_invoice(request, invoice, admin=False):
     if admin is True:
         admin_email()
 
-
-def serve_pdf(invoice, request, data):
+def serve_pdf(invoice, request):
     # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
 
     def link_callback(uri, rel):
