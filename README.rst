@@ -11,7 +11,7 @@ Install using pip::
 
     pip install wagtailinvoices
 
-It works with Wagtail 0.9 and upwards.
+It works with Wagtail 1.0b2 and upwards.
 
 Using
 =====
