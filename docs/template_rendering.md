@@ -1,6 +1,5 @@
 #Required templates
-The strucutre of this plugin assumes that you have an `emails` directory inside your templates which includes 
-`admin_invoice_message.txt` `invoice_message.txt` and `admin_receipt.txt`. Variables are accessed within the template via `{{invoice.(var name)}}`, the template tag `{{link}}` returns a link to that specific invoice
+Variables are accessed within the template via `{{invoice.(var name)}}`, the template tag `{{link}}` returns a link to that specific invoice. Templates to be used are defined in your `settings.py` or similar See [Getting Started -Settings](https://wagtailinvoices.readthedocs.org/en/latest/getting_started/#defining-settings)
 
 For example
 ``` html
