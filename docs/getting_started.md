@@ -42,9 +42,13 @@ Define the following settings where your settings are located
 Add `wagtail.contrib.wagtailroutablepage` to your installed apps and add these settings
 
 `WAGTAIL_INVOICES_ADMIN_EMAIL = ''` Email for admin to receive invoice notifactions for paid invoices etc
+
 `ADMIN_INVOICE_MESSAGE_TEMPLATE_PATH = ''`
+
 `PDF_TEMPLATE = ''` Template path for invoice pdf's relative to the templates folder
+
 `CLIENT_INVOICE_MESSAGE_TEMPLATE_PATH = ''` Path to invoice email sent out to clients See [Template Rendering](https://wagtailinvoices.readthedocs.org/en/latest/template-rendering/#required-templates)
+
 `WAGTAIL_INVOICES_VALIDATION = ''` See [Custom validation and overriding](https://wagtailinvoices.readthedocs.org/en/latest/advanced/#custom-validation-and-overriding) for more information
 
 
