@@ -23,7 +23,7 @@ Here is a link to the Invoice for the services you have requested:
 Chauffeured Cars & Coaches
 ```
 #Methods accessible via the template
-Method that retrieve certain information can be defined in the models to be then accessed in the template
+Method that retrieve certain information can be defined in the models to be then accessed in the template for example:
 ``` python 
     def due(self):
         time = int(self.days_due)
