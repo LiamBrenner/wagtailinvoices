@@ -41,10 +41,6 @@ def get_invoiceindex_content_types():
 
 
 class InvoiceIndexMixin(RoutablePageMixin):
-
-    class Meta:
-        pass
-
     invoice_model = None
     subpage_types = []
 

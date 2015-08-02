@@ -119,7 +119,6 @@ def create(request, pk):
     if request.method == 'POST':
 
         form = EditForm(request.POST, request.FILES, instance=invoice)
-        invoice.service_items.all()
         is_sending_email = send_button_name in request.POST
         if form.is_valid() and validation(request, invoice, is_sending_email):
             invoice = form.save()
