@@ -68,5 +68,5 @@ Method that retrieve certain information can be defined in the models to be then
 All those variables would be accesible as `{{invoice.(function name)}}` eg `{{invoice.due}}`
 
 #Rendering invoices to pdf format
-The plugin expects that you have a 'invoice.pdf.html' file which is used when trying to display the invoice as a PDF.
+The plugin/module expects that you have defined your `PDF_TEMPLATE` file in your settings which is used when trying to display the invoice as a PDF.
 Similarly variables are accessed via `{{invoice.(var name)}}` 
