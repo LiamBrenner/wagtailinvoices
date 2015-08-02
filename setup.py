@@ -24,7 +24,11 @@ setup(
     author_email='liam.brenner@gmail.com',
     url='https://bitbucket.org/sablewalnut/wagtailinvoices',
 
-    install_requires=['wagtail>=1.0b2'],
+    install_requires=[
+        'wagtail>=1.0b2',
+        'xhtml2pdf==0.0.6',
+        'django-uuidfield==0.5.0'
+    ],
     zip_safe=False,
     license='BSD License',
 
