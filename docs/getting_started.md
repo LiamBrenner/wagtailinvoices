@@ -41,7 +41,7 @@ Define the following settings where your settings are located
 
 Add `wagtail.contrib.wagtailroutablepage` to your installed apps and add these settings
 
-`WAGTAIL_INVOICES_ADMIN_EMAIL = ''` Email for admin to receive invoice notifactions for paid invoices etc
+`ADMIN_EMAIL = ''` Email for admin to receive invoice notifactions for paid invoices etc
 
 `ADMIN_INVOICE_MESSAGE_TEMPLATE_PATH = ''`
 
