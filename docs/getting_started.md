@@ -52,4 +52,4 @@ Add `wagtail.contrib.wagtailroutablepage` to your installed apps and add these s
 `WAGTAIL_INVOICES_VALIDATION = ''` See [Custom validation and overriding](https://wagtailinvoices.readthedocs.org/en/latest/advanced/#custom-validation-and-overriding) for more information
 
 
-There is future scope to have this setting included with [wagtailsettings](https://bitbucket.org/takeflight/wagtailsettings)
+There is future scope to have these settings included with [wagtailsettings](https://bitbucket.org/takeflight/wagtailsettings)
