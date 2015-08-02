@@ -41,7 +41,7 @@ def send_invoice(request, invoice, admin=False):
     id = str(invoice.id)
 
     def admin_email():
-        adminmessage = render_to_string('emails/admin_invoice_message.txt', {
+        adminmessage = render_to_string(settings.ADMIN_INVOICE_MESSAGE_TEMPLATE_PATH, {
             'invoice': invoice,
             'link': link,
             })
@@ -56,7 +56,7 @@ def send_invoice(request, invoice, admin=False):
 
     # Customer Email
     def customer_email():
-        invoicemessage = render_to_string('emails/invoice_message.txt', {
+        invoicemessage = render_to_string(settings.CLIENT_INVOICE_MESSAGE_TEMPLATE_PATH, {
             'invoice': invoice,
             'link': link,
         })
