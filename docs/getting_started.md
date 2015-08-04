@@ -24,12 +24,17 @@ class Invoice(AbstractInvoice):
     full_name = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=255)
+    amount = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        help_text='Without dollar sign($)')
     
 
     panels = [
         FieldPanel('full_name', classname='full'),
         FieldPanel('organization'),
         FieldPanel('phone_number')
+        FieldPanel('amount'),
     ] + AbstractInvoice.panels
 
     def __unicode__(self):
