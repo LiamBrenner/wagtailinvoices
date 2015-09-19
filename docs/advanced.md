@@ -37,8 +37,32 @@
             {% endfor %}
             </tbody>
 </table>
+<div class="pagination">
+    <p>Page {{page.number}} of {{paginator.num_pages}}</p>
+    <ul>
+        {% if page.has_previous %}
+        <li class="prev">
+            
+                
+                    <a href="?page={{page.previous_page_number}}" class="icon icon-arrow-left">Previous</a>
+                
+            
+        </li>
+        {% endif %}
+        {% if page.has_next %}
+        <li class="next">
+            
+                
+                    <a href="?page={{page.next_page_number}}" class="icon icon-arrow-right-after">Next</a>
+                
+            
+        </li>
+        {% endif %}
+    </ul>
+</div>
 ```
-You can define your own version of this inside `templates/wagtailinvoices` as `invoice_list.html`
+You can define your own version of this inside `templates/wagtailinvoices` as `invoice_list.html`.
+With the addition of pagination, you can use the wagtailstyleguide to help you utilise this new feature.
 #Custom validation and overriding
 Custom validation when saving an invoice can be done by defining a `validation.py` or similar, the name doesn't matter.
 Custom validation is done in this way as a work around for wagtail `EditHandlers`.

@@ -20,7 +20,6 @@ Here is a link to the Invoice for the services you have requested:
 <br>
 <b>This is an automatically generated message.</b>
 <br>
-Chauffeured Cars & Coaches
 ```
 #Methods accessible via the template
 Method that retrieve certain information can be defined in the models to be then accessed in the template for example:
