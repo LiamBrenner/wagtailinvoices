@@ -6,6 +6,7 @@ from django.conf import settings
 
 def set_braintree_mode(mode):
     if mode.lower() == "production":
+        print 'Initalising production mode!'
         braintree.Configuration.configure(
             braintree.Environment.Production,
             settings.BRAINTREE_MERCHANT_ID,
@@ -14,6 +15,7 @@ def set_braintree_mode(mode):
         )
 
     elif mode.lower() == "sandbox":
+        print 'Initalising sandbox mode!'
         braintree.Configuration.configure(
             braintree.Environment.Sandbox,
             settings.BRAINTREE_MERCHANT_ID,
