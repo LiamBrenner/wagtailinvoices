@@ -5,12 +5,14 @@ from wagtail.wagtailcore.models import Page
 
 from ..models import get_invoiceindex_content_types
 from ..forms import SearchForm
+from ..pagination import paginate
 
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
 def choose(request):
     invoiceindex_list = Page.objects.filter(content_type__in=get_invoiceindex_content_types())
     invoiceindex_count = invoiceindex_list.count()
+
     if invoiceindex_count == 1:
         invoiceindex = invoiceindex_list.first()
         return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
@@ -28,12 +30,19 @@ def index(request, pk):
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
     form = SearchForm()
+    paginator, page = paginate(
+        request,
+        Invoice.objects.order_by('-issue_date'),
+        per_page=8)
 
     return render(request, 'wagtailinvoices/index.html', {
+        'page': page,
+        'paginator': paginator,
         'invoiceindex': invoiceindex,
         'invoice_list': invoice_list,
         'form': form,
     })
+
 
 @permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
 def search(request, pk):
@@ -41,6 +50,11 @@ def search(request, pk):
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
     form = SearchForm(request.GET or None)
+    paginator, page = paginate(
+        request,
+        Invoice.objects.order_by('-issue_date'),
+        per_page=8)
+
     if form.is_valid():
         query = form.cleaned_data['query']
         invoice_list = invoice_list.search(query)
@@ -49,6 +63,8 @@ def search(request, pk):
         invoice_list = invoice_list.none()
 
     return render(request, 'wagtailinvoices/search.html', {
+        'page': page,
+        'paginator': paginator,
         'invoiceindex': invoiceindex,
         'invoice_list': invoice_list,
         'form': form,

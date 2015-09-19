@@ -8,7 +8,7 @@
                 <th class="date">Invoice No.</th>
             </tr></thead>
             <tbody>
-            {% for invoice in invoice_list|dictsortreversed:"issue_date" %}
+            {% for invoice in page %}
                 <tr>
                     <td class="title">
                         <h2>
@@ -34,3 +34,26 @@
             {% endfor %}
             </tbody>
 </table>
+<div class="pagination">
+    <p>Page {{page.number}} of {{paginator.num_pages}}</p>
+    <ul>
+        {% if page.has_previous %}
+        <li class="prev">
+            
+                
+                    <a href="?page={{page.previous_page_number}}" class="icon icon-arrow-left">Previous</a>
+                
+            
+        </li>
+        {% endif %}
+        {% if page.has_next %}
+        <li class="next">
+            
+                
+                    <a href="?page={{page.next_page_number}}" class="icon icon-arrow-right-after">Next</a>
+                
+            
+        </li>
+        {% endif %}
+    </ul>
+</div>
