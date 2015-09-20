@@ -50,17 +50,19 @@ def search(request, pk):
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
     form = SearchForm(request.GET or None)
-    paginator, page = paginate(
-        request,
-        Invoice.objects.order_by('-issue_date'),
-        per_page=8)
 
     if form.is_valid():
         query = form.cleaned_data['query']
-        invoice_list = invoice_list.search(query)
+        paginator, page = paginate(
+            request,
+            Invoice.objects.order_by('-issue_date').search(query),
+            per_page=8)
 
     else:
-        invoice_list = invoice_list.none()
+        paginator, page = paginate(
+            request,
+            Invoice.objects.order_by('-issue_date'),
+            per_page=8)
 
     return render(request, 'wagtailinvoices/search.html', {
         'page': page,
