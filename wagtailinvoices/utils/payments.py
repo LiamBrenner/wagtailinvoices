@@ -4,6 +4,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 
 
+
 def set_braintree_mode(mode):
     if mode.lower() == "production":
         print 'Initalising production mode!'
@@ -23,8 +24,11 @@ def set_braintree_mode(mode):
             settings.BRAINTREE_PRIVATE_KEY,
         )
     else:
-        raise Exception('BRAINTREE_MODE has either not been set or is incorrect')
-set_braintree_mode(settings.BRAINTREE_MODE)
+        raise ValueError("BRAINTREE_MODE needs to be set to either 'production' or 'sandbox'")
+try:
+    set_braintree_mode(settings.BRAINTREE_MODE)
+except AttributeError:
+    raise AttributeError('BRAINTREE_MODE has not been set in your django settings')
 
 
 def get_client_key():
