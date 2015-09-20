@@ -2,6 +2,32 @@
 {% load i18n %}
 {% block titletag %}{% trans "Invoices" %}{% endblock %}
 {% block bodyclass %}menu-invoice{% endblock %}
+
+{% block extra_js %}
+    {% include "wagtailadmin/shared/datetimepicker_translations.html" %}
+
+    <script>
+        $(function() {
+            $('#id_date_from').datetimepicker({
+                timepicker: false,
+                format: 'Y-m-d',
+                i18n: {
+                    lang: window.dateTimePickerTranslations
+                },
+                lang: 'lang'
+            });
+            $('#id_date_to').datetimepicker({
+                timepicker: false,
+                format: 'Y-m-d',
+                i18n: {
+                    lang: window.dateTimePickerTranslations
+                },
+                lang: 'lang'
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 
     <header class="nice-padding">
@@ -14,6 +40,46 @@
     {% csrf_token %}
     {{form}}
 <li class="submit visuallyhidden"><input type="submit" value="Search" class="button"></li>
+</form>
+
+<form style='margin-bottom:2em;position:absolute'>
+<div class="col search-bar">
+                        <ul class="fields row rowflush" style='margin-left:30em;'>
+<li class="col4">
+    
+<div class="field date_time_field date_input field-small">
+    <label for="id_date_from">Date from:</label>
+    <div class="field-content">
+        <div class="input  ">
+                <input id="id_date_from" name="date_from" placeholder="Date from" type="text">
+            <span></span>
+        </div>
+    </div>
+</div>
+</li>                             
+<li class="  col4 ">
+<div class="field date_time_field date_input field-small">
+    <label for="id_date_to">Date to:</label>
+    <div class="field-content">
+        <div class="input  ">
+            
+                <input id="id_date_to" name="date_to" placeholder="Date to" type="text">
+            
+            
+            
+            <span></span>
+        </div>
+        
+
+        
+    </div>
+</div>
+</li>   
+                            <li class="submit col2">
+                                <button name="action" value="filter" class="button">Statement</button>
+                            </li>
+                        </ul>
+                    </div>
 </form>
 </div>
 <div class='right'>
