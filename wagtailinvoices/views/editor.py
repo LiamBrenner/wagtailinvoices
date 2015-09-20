@@ -60,9 +60,9 @@ def send_invoice(request, invoice, admin=False):
             'invoice': invoice,
             'link': link,
         })
-        customer_email = EmailMessage('Invoice #' + id, invoicemessage, admin_email, [])
+        customer_email = EmailMessage('Invoice #' + id, invoicemessage, admin_email_address, [invoice.email])
         customer_email.content_subtype = "html"
-        customer_email.send()
+        customer_email.send(fail_silently=False)
     customer_email()
     if admin is True:
         admin_email()
