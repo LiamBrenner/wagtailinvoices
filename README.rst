@@ -1,22 +1,25 @@
-#wagtailinvoices
-
+===============
+wagtailinvoices
+===============
 
 A plugin for Wagtail that provides invoice functionality
-[Documentation on ReadTheDocs](https://wagtailinvoices.readthedocs.org/en/latest/)
-##Installing
+`Documentation on ReadTheDocs <https://wagtailinvoices.readthedocs.org/en/latest/>`_
 
+Installing
+==========
 
-Install using pip
-```
-pip install wagtailinvoices
-```
+Install using pip::
+
+	pip install wagtailinvoices
+
 It works with Wagtail 1.0b2 and upwards.
 
-##Using
+Using
+=====
 
-Create invoice models for your application that inherit from the relevant `wagtailinvoices` models:
+Create invoice models for your application that inherit from the relevant ``wagtailinvoices`` models:
 
-``` python
+.. code-block:: python
 
     from django.db import models
 
@@ -52,4 +55,3 @@ Create invoice models for your application that inherit from the relevant `wagta
 
         def __unicode__(self):
             return self.full_name
-```

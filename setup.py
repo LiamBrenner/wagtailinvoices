@@ -5,7 +5,7 @@ Install wagtailinvoices using setuptools
 
 from wagtailinvoices import __version__
 
-with open('README.md', 'r') as f:
+with open('README.rst', 'r') as f:
     readme = f.read()
 
 try:
