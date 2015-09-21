@@ -44,6 +44,18 @@ def serve_statement_pdf(date_from, date_to, invoice_list, request):
             for service in invoice.service_items.all():
                 total = total + service.amount
         return total
+
+    def total_received():
+        total = 0
+        for invoice in invoice_list:
+            if invoice.payment_received:
+                for service in invoice.service_items.all():
+                        total = total + service.amount
+        return total
+
+    def total_outstanding():
+        return get_total() - total_received()
+
     # Render html content through html template with context
     template = get_template(settings.PDF_STATEMENT_TEMPLATE)
     context = {
@@ -51,6 +63,8 @@ def serve_statement_pdf(date_from, date_to, invoice_list, request):
         'date_from': date_from,
         'date_to': date_to,
         'total': get_total(),
+        'total_received': total_received(),
+        'total_outstanding': total_outstanding(),
         }
     html = template.render(context)
 
