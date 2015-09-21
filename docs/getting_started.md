@@ -93,6 +93,7 @@ Add `wagtail.contrib.wagtailroutablepage` to your installed apps and add these s
 ADMIN_EMAIL = '' # Email for admin to receive invoice notifactions for paid invoices etc
 ADMIN_INVOICE_MESSAGE_TEMPLATE_PATH = ''`
 PDF_TEMPLATE = '' # Template path for invoice pdf's relative to the templates folder
+PDF_STATEMENT_TEMPLATE = '' # Same as above, but for statements
 CLIENT_INVOICE_MESSAGE_TEMPLATE_PATH = '' # Path to invoice email sent out to clients 
 WAGTAIL_INVOICES_VALIDATION = ''
 BRAINTREE_MERCHANT_ID = ''

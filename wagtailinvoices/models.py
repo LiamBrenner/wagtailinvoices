@@ -52,6 +52,10 @@ class InvoiceIndexMixin(RoutablePageMixin):
     def v_invoice_pdf(s, r, **k):
         return frontend.invoice_pdf(r, s, **k)
 
+    @route(r'^(?P<uuid>[0-9a-f-]+)/statement/$', name='invoice_statement')
+    def v_invoice_statement(s, r, **k):
+        return frontend.invoice_pdf(r, s, **k)
+
     @classmethod
     def get_invoice_model(cls):
         if isinstance(cls.invoice_model, models.Model):
