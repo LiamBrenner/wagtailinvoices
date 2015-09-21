@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load wagtailinvoices_tags %}
 <table class="listing full-width">
             <colgroup>
             <thead><tr class="table-headers">
@@ -41,7 +42,7 @@
         <li class="prev">
             
                 
-                    <a href="?page={{page.previous_page_number}}" class="icon icon-arrow-left">Previous</a>
+                    <a href="?{% querystring page=page.previous_page_number %}" class="icon icon-arrow-left">Previous</a>
                 
             
         </li>
@@ -50,7 +51,7 @@
         <li class="next">
             
                 
-                    <a href="?page={{page.next_page_number}}" class="icon icon-arrow-right-after">Next</a>
+                    <a href="?{% querystring page=page.next_page_number %}" class="icon icon-arrow-right-after">Next</a>
                 
             
         </li>
