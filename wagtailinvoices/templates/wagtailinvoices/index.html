@@ -30,58 +30,32 @@
 
 {% block content %}
 
-    <header class="nice-padding">
+    <header class="nice-padding" style='padding-bottom:3em;'>
         <div class="row">
             <div class="left">
             <div class='col'>
                 <h1 class="icon icon-edit">{% blocktrans %}Invoices{% endblocktrans %} </h1>
                 </div>
             <form class='col search-form' action='{% url 'wagtailinvoices_search' pk=invoiceindex.pk %}' method="GET">
-    {% csrf_token %}
-    {{form}}
+    {{search_form}}
 <li class="submit visuallyhidden"><input type="submit" value="Search" class="button"></li>
 </form>
 
-<form style='margin-bottom:2em;position:absolute'>
 <div class="col search-bar">
-                        <ul class="fields row rowflush" style='margin-left:30em;'>
-<li class="col4">
-    
-<div class="field date_time_field date_input field-small">
-    <label for="id_date_from">Date from:</label>
-    <div class="field-content">
-        <div class="input  ">
-                <input id="id_date_from" name="date_from" placeholder="Date from" type="text">
-            <span></span>
-        </div>
-    </div>
-</div>
-</li>                             
-<li class="  col4 ">
-<div class="field date_time_field date_input field-small">
-    <label for="id_date_to">Date to:</label>
-    <div class="field-content">
-        <div class="input  ">
-            
-                <input id="id_date_to" name="date_to" placeholder="Date to" type="text">
-            
-            
-            
-            <span></span>
-        </div>
-        
+<form style='margin-right:10em;position:absolute;' action='{% url 'wagtailinvoices_statement' pk=invoiceindex.pk %}' method="GET">
 
-        
-    </div>
-</div>
-</li>   
+                        <ul class="fields row rowflush">
+                            {% for field in statement_form %}
+                                {% include "wagtailadmin/shared/field_as_li.html" with field=field field_classes="field-small" li_classes="col4" %}
+                            {% endfor %}
                             <li class="submit col2">
-                                <button name="action" value="filter" class="button">Statement</button>
+                                <button name="action" value="filter" class="button">{% trans 'Statement' %}</button>
                             </li>
                         </ul>
+                    </form>
                     </div>
-</form>
 </div>
+
 <div class='right'>
             <div class="addbutton">
                 <a href="{% url 'wagtailinvoices_create' invoiceindex.pk %}" class="button bicolor icon icon-plus">{% blocktrans %}Create Invoice{% endblocktrans %}</a>

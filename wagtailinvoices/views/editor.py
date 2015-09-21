@@ -91,7 +91,7 @@ def serve_pdf(invoice, request):
         return path
 
     # Render html content through html template with context
-    template = get_template('invoicelist/invoice_pdf.html')
+    template = get_template(settings.PDF_TEMPLATE)
     html = template.render(Context(invoice))
 
     # Write PDF to file

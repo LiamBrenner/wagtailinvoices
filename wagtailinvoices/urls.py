@@ -11,6 +11,8 @@ urlpatterns = [
         name='wagtailinvoices_index'),
     url(r'^(?P<pk>\d+)/search/$', chooser.search,
         name='wagtailinvoices_search'),
+    url(r'^(?P<pk>\d+)/statement/$', chooser.statement,
+        name='wagtailinvoices_statement'),
     url(r'^(?P<pk>\d+)/create/$', editor.create,
         name='wagtailinvoices_create'),
     url(r'^(?P<pk>\d+)/edit/(?P<invoice_pk>.*)/$', editor.edit,

@@ -68,4 +68,5 @@ All those variables would be accesible as `{{invoice.(function name)}}` eg `{{in
 
 #Rendering invoices to pdf format
 The plugin/module expects that you have defined your `PDF_TEMPLATE` file in your settings which is used when trying to display the invoice as a PDF.
+Define a `PDF_STATEMENT_TEMPLATE` to define what the statement search will be rendered to (as a pdf).
 Similarly variables are accessed via `{{invoice.(var name)}}` 
