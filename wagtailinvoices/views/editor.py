@@ -13,8 +13,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 
-# TODO Swap with django.utils.lru_cache.lru_cache at Django 1.7
-from django.utils.functional import memoize
+from django.utils.lru_cache import lru_cache
 
 from wagtail.wagtailadmin.edit_handlers import (
     ObjectList, extract_panel_definitions_from_model_class)
@@ -26,12 +25,12 @@ from django.utils.module_loading import import_string
 validation = import_string(getattr(settings, 'WAGTAIL_INVOICES_VALIDATION', 'wagtailinvoices.utils.validation.validation'))
 
 
+@lru_cache(maxsize=None)
 def get_invoice_edit_handler(Invoice):
     panels = extract_panel_definitions_from_model_class(
         Invoice, exclude=['invoiceindex'])
     EditHandler = ObjectList(panels).bind_to_model(Invoice)
     return EditHandler
-get_invoice_edit_handler = memoize(get_invoice_edit_handler, {}, 1)
 
 
 def send_invoice(request, invoice, admin=False):
