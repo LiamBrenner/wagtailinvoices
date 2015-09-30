@@ -158,17 +158,26 @@ def statement(request, pk):
     invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
     Invoice = invoiceindex.get_invoice_model()
     invoice_list = Invoice.objects.filter(invoiceindex=invoiceindex)
-    form = StatementForm(request.GET or None)
+    statement_form = StatementForm(request.GET or None)
+    search_form = SearchForm(request.GET or None)
 
     paginator, page = paginate(
         request,
         Invoice.objects.order_by('-issue_date'),
         per_page=8)
 
-    if form.is_valid():
-        date_from = datetime.datetime.strptime(str(form.cleaned_data['date_from']), '%Y-%m-%d')
-        date_to = datetime.datetime.strptime(str(form.cleaned_data['date_to']), '%Y-%m-%d')
+    if statement_form.is_valid():
+        print('hi')
+        date_from = datetime.datetime.strptime(str(statement_form.cleaned_data['date_from']), '%Y-%m-%d')
+        date_to = datetime.datetime.strptime(str(statement_form.cleaned_data['date_to']), '%Y-%m-%d')
         invoice_list = Invoice.objects.filter(issue_date__range=(date_from, date_to))
         return serve_statement_pdf(date_from, date_to, invoice_list, request)
-    else:
-        invoice_list = invoice_list.none()
+
+    return render(request, 'wagtailinvoices/index.html', {
+        'page': page,
+        'paginator': paginator,
+        'invoiceindex': invoiceindex,
+        'invoice_list': invoice_list,
+        'search_form': search_form,
+        'statement_form': statement_form
+    })
