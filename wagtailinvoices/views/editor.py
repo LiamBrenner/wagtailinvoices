@@ -23,6 +23,7 @@ from ..models import get_invoiceindex_content_types
 from django.utils.module_loading import import_string
 
 validation = import_string(getattr(settings, 'WAGTAIL_INVOICES_VALIDATION', 'wagtailinvoices.utils.validation.validation'))
+extra_step = import_string(getattr(settings, 'WAGTAIL_INVOICES_EXTRA_STEP', 'wagtailinvoices.utils.extra_step.extra_step'))
 
 
 @lru_cache(maxsize=None)
@@ -125,6 +126,7 @@ def create(request, pk):
 
             if is_sending_email:
                 send_invoice(request, invoice)
+                extra_step(request, invoice)
                 messages.success(request, _('The invoice "{0!s}" has been added').format(invoice))
                 return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
 
@@ -170,6 +172,7 @@ def edit(request, pk, invoice_pk):
 
             if is_sending_email:
                 send_invoice(request, invoice)
+                extra_step(request, invoice)
                 messages.success(request, _('The invoice "{0!s}" has been updated').format(invoice))
                 return redirect('wagtailinvoices_index', pk=invoiceindex.pk)
 
