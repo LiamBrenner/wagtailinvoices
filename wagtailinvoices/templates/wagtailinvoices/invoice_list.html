@@ -19,6 +19,7 @@
                         </h2>
                         <ul class="actions">
                             <li><a href="{% url 'wagtailinvoices_edit' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small">{% trans 'Edit' %}</a></li>
+                            <li><a href="{% url 'wagtailinvoices_copy' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small button-secondary yes">{% trans 'Copy' %}</a></li>
                             <li><a href="{% url 'wagtailinvoices_delete' pk=invoiceindex.pk invoice_pk=invoice.pk %}" class="button button-small button-secondary no">{% trans 'Delete' %}</a></li>
                         </ul>
                     </td>
@@ -40,20 +41,20 @@
     <ul>
         {% if page.has_previous %}
         <li class="prev">
-            
-                
+
+
                     <a href="?{% querystring page=page.previous_page_number %}" class="icon icon-arrow-left">Previous</a>
-                
-            
+
+
         </li>
         {% endif %}
         {% if page.has_next %}
         <li class="next">
-            
-                
+
+
                     <a href="?{% querystring page=page.next_page_number %}" class="icon icon-arrow-right-after">Next</a>
-                
-            
+
+
         </li>
         {% endif %}
     </ul>

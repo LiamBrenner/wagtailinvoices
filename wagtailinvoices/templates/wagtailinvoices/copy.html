@@ -1,0 +1,24 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}{% trans "Invoices" %}{% endblock %}
+{% block bodyclass %}menu-invoice{% endblock %}
+{% block content %}
+
+	{% trans "Copy" as new_str %}
+	{% include "wagtailadmin/shared/header.html" with title=new_str subtitle=invoice icon="grip" %}
+
+	<div class="row row-flush nice-padding">
+		<form action="{% url 'wagtailinvoices_copy' pk=invoiceindex.pk invoice_pk=invoice.pk %}" method="POST">
+			{% csrf_token %}
+			<p>{% blocktrans %}Are you sure you want to create a duplicate of this invoice item?{% endblocktrans %}</p>
+			<input type="submit" class="button yes" value="{% trans 'Yes, create duplicate' %}" />
+		</form>
+	</div>
+{% endblock %}
+
+{% block extra_css %}
+	{% include "wagtailadmin/pages/_editor_css.html" %}
+{% endblock %}
+{% block extra_js %}
+	{% include "wagtailadmin/pages/_editor_js.html" %}
+{% endblock %}

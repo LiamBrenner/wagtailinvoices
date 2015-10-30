@@ -19,4 +19,6 @@ urlpatterns = [
         name='wagtailinvoices_edit'),
     url(r'^(?P<pk>\d+)/delete/(?P<invoice_pk>.*)/$', editor.delete,
         name='wagtailinvoices_delete'),
+    url(r'^(?P<pk>\d+)/copy/(?P<invoice_pk>.*)/$', editor.copy,
+        name='wagtailinvoices_copy'),
 ]

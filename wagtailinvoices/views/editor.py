@@ -11,6 +11,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
 from django.conf import settings
+from django.utils import timezone
 
 
 from django.utils.lru_cache import lru_cache
@@ -211,6 +212,24 @@ def delete(request, pk, invoice_pk):
         return redirect('wagtailinvoices_index', pk=pk)
 
     return render(request, 'wagtailinvoices/delete.html', {
+        'invoiceindex': invoiceindex,
+        'invoice': invoice,
+    })
+
+@permission_required('wagtailadmin.access_admin')  # further permissions are enforced within the view
+def copy(request, pk, invoice_pk):
+    invoiceindex = get_object_or_404(Page, pk=pk, content_type__in=get_invoiceindex_content_types()).specific
+    Invoice = invoiceindex.get_invoice_model()
+    invoice = Invoice.objects.get(id=invoice_pk)
+
+    if request.method == 'POST':
+        invoice.pk = None
+        invoice.uuid = None
+        invoice.issue_date = timezone.now()
+        invoice.save()
+        return redirect('wagtailinvoices_index', pk=pk)
+
+    return render(request, 'wagtailinvoices/copy.html', {
         'invoiceindex': invoiceindex,
         'invoice': invoice,
     })
