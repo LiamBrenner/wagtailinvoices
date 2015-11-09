@@ -226,6 +226,16 @@ def copy(request, pk, invoice_pk):
         invoice.pk = None
         invoice.uuid = None
         invoice.issue_date = timezone.now()
+        invoice.payment_received = False
+        invoice.payment_method = None
+        invoice.sent = False
+        invoice.payment_received_date = None
+        invoice.job_status = "Open"
+        invoice.three_days = False
+        invoice.seven_days = False
+        invoice.fourteen_days = False
+        invoice.thirty_days = False
+        invoice.forty_two_days = False
         invoice.save()
         return redirect('wagtailinvoices_index', pk=pk)
 
