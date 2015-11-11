@@ -167,7 +167,6 @@ def statement(request, pk):
         per_page=8)
 
     if statement_form.is_valid():
-        print('hi')
         date_from = datetime.datetime.strptime(str(statement_form.cleaned_data['date_from']), '%Y-%m-%d')
         date_to = datetime.datetime.strptime(str(statement_form.cleaned_data['date_to']), '%Y-%m-%d')
         invoice_list = Invoice.objects.filter(issue_date__range=(date_from, date_to))
