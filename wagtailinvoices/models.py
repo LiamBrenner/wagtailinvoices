@@ -1,6 +1,10 @@
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, print_function
 
-import StringIO
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
+
 import os
 from xhtml2pdf import pisa
 
@@ -139,7 +143,7 @@ class AbstractInvoice(models.Model):
         # Render html content through html template with context
         template = get_template(settings.PDF_TEMPLATE)
         html = template.render(Context({'invoice': self}))
-        print type(self)
+        print(type(self))
 
         # Write PDF to file
         file = StringIO.StringIO()
