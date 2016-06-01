@@ -26,7 +26,7 @@ setup(
 
     install_requires=[
         'wagtail>=1.0b2',
-        'xhtml2pdf==0.0.6',
+        'xhtml2pdf>=0.0.6',
         'django-uuidfield==0.5.0',
         'braintree>=3.13.0'
     ],
