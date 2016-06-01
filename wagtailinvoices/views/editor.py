@@ -1,5 +1,10 @@
 import os
-import StringIO
+
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
+
 from xhtml2pdf import pisa
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required

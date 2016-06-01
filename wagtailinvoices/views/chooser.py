@@ -1,5 +1,12 @@
+from __future__ import absolute_import, unicode_literals, print_function
+
 import os
-import StringIO
+
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
+
 import datetime
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -130,7 +137,6 @@ def search(request, pk):
     if search_form.is_valid():
         query = search_form.cleaned_data['query']
         invoice_list = invoice_list.search(query)
-        print invoice_list
 
     else:
         paginator, page = paginate(
