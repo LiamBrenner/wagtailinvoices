@@ -146,7 +146,10 @@ class AbstractInvoice(models.Model):
         print(type(self))
 
         # Write PDF to file
-        file = StringIO.StringIO()
+        try:
+            file = StringIO.StringIO()
+        except AttributeError:
+            file = StringIO()
         pisaStatus = pisa.CreatePDF(
             html,
             dest=file,
