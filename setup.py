@@ -25,8 +25,8 @@ setup(
     url='https://bitbucket.org/sablewalnut/wagtailinvoices',
 
     install_requires=[
-        'wagtail>=1.0b2',
-        'xhtml2pdf>=0.0.6',
+        'wagtail>=1.0',
+        'weasyprint>=0.28',
         'django-uuidfield==0.5.0',
         'braintree>=3.13.0'
     ],

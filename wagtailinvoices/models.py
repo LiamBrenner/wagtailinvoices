@@ -1,34 +1,41 @@
-from __future__ import absolute_import, unicode_literals, print_function
-
-try:
-    import StringIO
-except ImportError:
-    from io import StringIO
+from __future__ import absolute_import, print_function, unicode_literals
 
 import os
-from xhtml2pdf import pisa
 
-from six import text_type, string_types
+from six import string_types, text_type
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.shortcuts import render
-from django.utils.text import slugify
 from django.db.models.query import QuerySet
-from django.template.loader import get_template
-from django.template import Context
-from django.conf import settings
-from django.utils import timezone
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.template import Context
+from django.template.loader import get_template
+from django.utils import timezone
+from django.utils.text import slugify
 from uuidfield import UUIDField
-
-
 from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.utils import resolve_model_string
 from wagtail.wagtailsearch import index
 from wagtail.wagtailsearch.backends import get_search_backend
+from weasyprint import CSS, HTML
+from xhtml2pdf import pisa
+
+# Need to import this down here to prevent circular imports :(
+from .views import frontend
+
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
+
+
+
+
+
 
 
 INVOICEINDEX_MODEL_CLASSES = []
@@ -119,45 +126,24 @@ class AbstractInvoice(models.Model):
         })
 
     def serve_pdf(self, request):
-        # Convert HTML URIs to absolute system paths
-        def link_callback(uri, rel):
-            # use short variable names
-            sUrl = settings.STATIC_URL
-            sRoot = settings.STATIC_ROOT
-            mUrl = settings.MEDIA_URL
-            mRoot = settings.MEDIA_ROOT
-
-            # convert URIs to absolute system paths
-            if uri.startswith(mUrl):
-                path = os.path.join(mRoot, uri.replace(mUrl, ""))
-            elif uri.startswith(sUrl):
-                path = os.path.join(sRoot, uri.replace(sUrl, ""))
-
-            # make sure that file exists
-            if not os.path.isfile(path):
-                    raise Exception(
-                            'media URI must start with %s or %s' % \
-                            (sUrl, mUrl))
-            return path
-
         # Render html content through html template with context
         template = get_template(settings.PDF_TEMPLATE)
-        html = template.render(Context({'invoice': self}))
-        print(type(self))
+        context = {
+            'invoice': self,
+        }
+
+        html = template.render(context)
 
         # Write PDF to file
-        try:
-            file = StringIO.StringIO()
-        except AttributeError:
-            file = StringIO()
-        pisaStatus = pisa.CreatePDF(
-            html,
-            dest=file,
-            link_callback=link_callback)
-
-        # Return PDF document through a Django HTTP response
-        file.seek(0)
-        return HttpResponse(file, content_type='application/pdf')
-
-# Need to import this down here to prevent circular imports :(
-from .views import frontend
+        document_html = HTML(string=html, base_url=request.build_absolute_uri())
+        document = document_html.render()
+        if len(document.pages) > 1:
+            for page in document.pages[1:]:
+                str(page)
+            pdf = document.write_pdf()
+        else:
+            pdf = document.write_pdf()
+        #response = HttpResponse(html)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="Invoice {0} | Invoice {0}.pdf"'.format(self.id)
+        return response
