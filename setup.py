@@ -22,7 +22,7 @@ setup(
     long_description=readme,
     author='Liam Brenner',
     author_email='liam.brenner@gmail.com',
-    url='https://bitbucket.org/sablewalnut/wagtailinvoices',
+    url='https://github.com/SableWalnut/wagtailinvoices',
 
     install_requires=[
         'wagtail>=1.0',
